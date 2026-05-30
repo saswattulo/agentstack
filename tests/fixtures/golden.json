@@ -1,0 +1,8 @@
+[
+  {
+    "question": "What is the project's primary vector store?",
+    "expected_answer": "Qdrant.",
+    "expected_chunk_ids": [],
+    "notes": "Placeholder golden item — extend after Week 2 ingest some real docs."
+  }
+]

@@ -1,0 +1,96 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+claude.md
+
+# Virtual envs
+.venv/
+venv/
+ENV/
+env/
+
+# uv
+.uv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+coverage.xml
+*.cover
+
+# Logs
+*.log
+logs/
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Data
+data/
+*.pdf
+*.docx
+!tests/fixtures/**/*.pdf
+!tests/fixtures/**/*.docx
+
+# Qdrant local storage
+qdrant_storage/
+
+# Postgres local data
+pg_data/
+
+# Redis local data
+redis_data/
+
+# Phoenix traces
+.phoenix/
+
+# Models cache (sentence-transformers, HF)
+.cache/
+models_cache/
+
+# Next.js
+frontend/.next/
+frontend/node_modules/
+frontend/out/
+frontend/build/
+frontend/.turbo/
+
+# OS
+Thumbs.db
+
+# Alembic SQLite for local testing (if any)
+*.sqlite
+*.db

@@ -1,0 +1,102 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "title": "AgentStack — Overview",
+  "tags": ["agentstack", "rag"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total HTTP Requests",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        { "expr": "sum(http_requests_total)", "refId": "A" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "type": "stat",
+      "title": "Active Collections",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        { "expr": "agentstack_collections_total", "refId": "A" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "type": "stat",
+      "title": "Documents Ingested",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        { "expr": "sum(agentstack_documents_ingested_total)", "refId": "A" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "type": "stat",
+      "title": "Cache Hit Rate",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        { "expr": "rate(agentstack_cache_hits_total[5m]) / (rate(agentstack_cache_hits_total[5m]) + rate(agentstack_cache_misses_total[5m]))", "refId": "A" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "type": "timeseries",
+      "title": "Query Latency (p50/p95/p99)",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.5, sum(rate(agentstack_query_latency_seconds_bucket[5m])) by (le))", "refId": "A", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, sum(rate(agentstack_query_latency_seconds_bucket[5m])) by (le))", "refId": "B", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, sum(rate(agentstack_query_latency_seconds_bucket[5m])) by (le))", "refId": "C", "legendFormat": "p99" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "type": "timeseries",
+      "title": "LLM Tokens / sec (by model)",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "sum(rate(agentstack_llm_tokens_total[5m])) by (model)", "refId": "A", "legendFormat": "{{model}}" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "type": "timeseries",
+      "title": "Eval — Faithfulness (avg)",
+      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "avg_over_time(agentstack_eval_faithfulness_score[10m])", "refId": "A" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "type": "timeseries",
+      "title": "Retrieval Chunks Returned",
+      "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(agentstack_retrieval_chunks_returned_bucket[5m])) by (le))", "refId": "A", "legendFormat": "p95" }
+      ],
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    }
+  ]
+}
