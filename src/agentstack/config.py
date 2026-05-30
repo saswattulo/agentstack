@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     app_port: int = 8000
 
     dev_api_key: str = "dev-local-key-change-me"
-    dev_user_email: str = "dev@agentstack.local"
+    dev_user_email: str = "dev@example.com"
 
     jwt_secret_key: str = "change-me-in-prod-please-this-is-not-safe"
     jwt_algorithm: str = "HS256"

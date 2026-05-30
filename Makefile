@@ -83,6 +83,16 @@ phoenix-ui:
 grafana-ui:
 	@echo "Grafana UI:      http://localhost:3001 (admin/admin)"
 
+ports:
+	@echo "Host-side ports for AgentStack services:"
+	@echo "  API        http://localhost:8000"
+	@echo "  Postgres   localhost:5442  (psql -h localhost -p 5442 -U agentstack)"
+	@echo "  Redis      localhost:6390  (redis-cli -h localhost -p 6390)"
+	@echo "  Qdrant     localhost:6333  (http://localhost:6333/dashboard)"
+	@echo "  Phoenix    localhost:6006"
+	@echo "  Prometheus localhost:9090"
+	@echo "  Grafana    localhost:3001"
+
 migrate:
 	docker compose exec api alembic upgrade head
 

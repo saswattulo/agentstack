@@ -61,10 +61,15 @@ make logs
 
 Visit:
 
-- API:      http://localhost:8000/docs
-- Qdrant:   http://localhost:6333/dashboard
-- Phoenix:  http://localhost:6006
-- Grafana:  http://localhost:3001 (admin/admin)
+- API:        http://localhost:8000/docs
+- Qdrant:     http://localhost:6333/dashboard
+- Phoenix:    http://localhost:6006
+- Grafana:    http://localhost:3001 (admin/admin)
+- Prometheus: http://localhost:9090
+- Postgres:   `localhost:5442` (mapped from container `5432` to avoid conflicts with a host Postgres)
+- Redis:      `localhost:6390` (mapped from container `6379` similarly)
+
+> Inter-container traffic uses the standard `5432`/`6379`. Only host-side `psql` / `redis-cli` need the remapped ports. Run `make ports` for the full list.
 
 ## Try it
 

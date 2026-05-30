@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-import hashlib
 from datetime import datetime, timezone
 
 from fastapi import Request
@@ -16,6 +15,7 @@ from starlette.responses import JSONResponse
 from agentstack.infra.db import get_sessionmaker
 from agentstack.infra.logging import get_logger
 from agentstack.models.api_key import ApiKey
+from agentstack.services.api_key_service import hash_api_key
 from agentstack.services.jwt_service import InvalidTokenError, decode_access_token
 
 logger = get_logger(__name__)
@@ -36,10 +36,6 @@ PUBLIC_PATHS = {
     "/api/v1/auth/register",
     "/api/v1/auth/login",
 }
-
-
-def hash_api_key(raw_key: str) -> str:
-    return hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
 
 
 def _is_public(path: str) -> bool:

@@ -15,29 +15,31 @@ _async_client: AsyncQdrantClient | None = None
 _sync_client: QdrantClient | None = None
 
 
+def _client_kwargs() -> dict:
+    kwargs: dict = {
+        "host": settings.qdrant_host,
+        "port": settings.qdrant_port,
+        "grpc_port": settings.qdrant_grpc_port,
+        "prefer_grpc": False,
+        "https": False,
+        "check_compatibility": False,
+    }
+    if settings.qdrant_api_key:
+        kwargs["api_key"] = settings.qdrant_api_key
+    return kwargs
+
+
 def get_qdrant() -> AsyncQdrantClient:
     global _async_client
     if _async_client is None:
-        _async_client = AsyncQdrantClient(
-            host=settings.qdrant_host,
-            port=settings.qdrant_port,
-            grpc_port=settings.qdrant_grpc_port,
-            api_key=settings.qdrant_api_key,
-            prefer_grpc=False,
-        )
+        _async_client = AsyncQdrantClient(**_client_kwargs())
     return _async_client
 
 
 def get_qdrant_sync() -> QdrantClient:
     global _sync_client
     if _sync_client is None:
-        _sync_client = QdrantClient(
-            host=settings.qdrant_host,
-            port=settings.qdrant_port,
-            grpc_port=settings.qdrant_grpc_port,
-            api_key=settings.qdrant_api_key,
-            prefer_grpc=False,
-        )
+        _sync_client = QdrantClient(**_client_kwargs())
     return _sync_client
 
 
