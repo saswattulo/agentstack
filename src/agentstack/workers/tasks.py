@@ -133,7 +133,8 @@ def ingest_document_task(self, document_id: str) -> dict:
             points: list[PointStruct] = []
             chunk_rows: list[ChunkMetadata] = []
             for chunk, vec in zip(chunks, vectors, strict=True):
-                point_id = f"{doc.id}__{chunk.index}"
+                seed = f"{doc.id}__{chunk.index}"
+                qdrant_id = _uuid_from_str(seed)
                 payload = {
                     "document_id": str(doc.id),
                     "collection_id": str(doc.collection_id),
@@ -146,7 +147,7 @@ def ingest_document_task(self, document_id: str) -> dict:
                 }
                 points.append(
                     PointStruct(
-                        id=_uuid_from_str(point_id),
+                        id=qdrant_id,
                         vector=vec,
                         payload=payload,
                     )
@@ -155,7 +156,7 @@ def ingest_document_task(self, document_id: str) -> dict:
                     ChunkMetadata(
                         document_id=doc.id,
                         collection_id=doc.collection_id,
-                        qdrant_point_id=point_id,
+                        qdrant_point_id=qdrant_id,
                         chunk_index=chunk.index,
                         content_preview=chunk.text[:240],
                         token_count=len(chunk.text.split()),

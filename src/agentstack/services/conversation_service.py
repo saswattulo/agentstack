@@ -84,6 +84,36 @@ async def list_messages(
     return list(result.scalars().all())
 
 
+async def get_recent_turns(
+    db: AsyncSession,
+    *,
+    conversation_id: UUID,
+    user_id: UUID,
+    limit: int = 5,
+) -> list[dict]:
+    """Return prior Q&A pairs as chat messages, oldest-first, for prompt injection.
+
+    Only fully-answered turns are included. The current (in-flight) question is
+    NOT included — callers add it after this list.
+    """
+    await get_conversation_for_user(db, conversation_id, user_id)
+    result = await db.execute(
+        select(QueryLog)
+        .where(
+            QueryLog.conversation_id == conversation_id,
+            QueryLog.answer.is_not(None),
+        )
+        .order_by(desc(QueryLog.created_at))
+        .limit(limit)
+    )
+    rows = list(reversed(result.scalars().all()))
+    messages: list[dict] = []
+    for row in rows:
+        messages.append({"role": "user", "content": row.question})
+        messages.append({"role": "assistant", "content": row.answer or ""})
+    return messages
+
+
 async def delete_conversation(db: AsyncSession, *, conversation_id: UUID, user_id: UUID) -> None:
     conversation = await get_conversation_for_user(db, conversation_id, user_id)
     await db.delete(conversation)

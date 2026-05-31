@@ -1,12 +1,11 @@
-"""Query endpoint — Week 2 will implement the LangGraph agent.
+"""Query endpoints.
 
-Today returns a stub but writes a real, owner-scoped QueryLog linked to a
-conversation so the chat history persistence shape is exercised end-to-end.
+The route is thin: it verifies ownership and resolves the conversation, then
+delegates to `services.query_service`. The streaming variant is replaced in
+Step 6.
 """
 
-import json
-import time
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
@@ -14,12 +13,9 @@ from sqlalchemy import select
 
 from agentstack.api.deps import CurrentUserDep, DbSession
 from agentstack.api.errors import NotFoundError
-from agentstack.config import settings
-from agentstack.infra.metrics import QUERY_LATENCY
 from agentstack.models.collection import Collection
-from agentstack.models.eval import QueryLog
 from agentstack.schemas.query import QueryRequest, QueryResponse
-from agentstack.services import conversation_service
+from agentstack.services import conversation_service, query_service
 
 router = APIRouter(prefix="/api/v1", tags=["query"])
 
@@ -55,43 +51,12 @@ async def handle_query(
 ) -> QueryResponse:
     await _verify_collection(db, payload.collection_id, current.id)
     conversation_id = await _resolve_conversation_id(payload, db, current.id)
-
-    start = time.perf_counter()
-    query_id = uuid4()
-
-    # TODO(week-2): replace with agentstack.core.agent.graph.invoke(...)
-    answer = (
-        "Query pipeline not yet implemented — Week 2 work. "
-        "This endpoint will route through a LangGraph agent (router → retrieval → "
-        "synthesis) and return a cited answer."
-    )
-
-    latency_ms = int((time.perf_counter() - start) * 1000)
-    QUERY_LATENCY.labels(collection_id=str(payload.collection_id)).observe(latency_ms / 1000)
-
-    log = QueryLog(
-        id=query_id,
+    return await query_service.run_query(
+        payload,
+        db=db,
         user_id=current.id,
         conversation_id=conversation_id,
-        collection_id=payload.collection_id,
         api_key_id=current.api_key_id,
-        question=payload.question,
-        answer=answer,
-        latency_ms=latency_ms,
-        model=settings.groq_chat_model,
-    )
-    db.add(log)
-    await db.commit()
-
-    return QueryResponse(
-        query_id=query_id,
-        answer=answer,
-        citations=[],
-        intent="stub",
-        tools_used=[],
-        cache_hit=False,
-        latency_ms=latency_ms,
-        model=settings.groq_chat_model,
     )
 
 
@@ -103,13 +68,9 @@ async def handle_query_stream(
     await _resolve_conversation_id(payload, db, current.id)
 
     async def event_stream():
-        # TODO(week-2): wire to agent.stream(...)
-        chunks = [
-            "Query streaming pipeline not yet implemented — Week 2 work. ",
-            "Replace this with token-by-token output from the LangGraph agent.",
-        ]
-        for c in chunks:
-            yield f"data: {json.dumps({'type': 'token', 'data': c})}\n\n"
+        import json
+
+        yield f"data: {json.dumps({'type': 'token', 'data': 'streaming wired in Step 6'})}\n\n"
         yield f"data: {json.dumps({'type': 'final', 'data': {'citations': []}})}\n\n"
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")

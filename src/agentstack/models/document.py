@@ -33,7 +33,11 @@ class Document(Base, UUIDPKMixin, TimestampMixin):
     mime_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
     size_bytes: Mapped[int | None] = mapped_column(Integer, nullable=True)
     status: Mapped[DocumentStatus] = mapped_column(
-        Enum(DocumentStatus, name="document_status"),
+        Enum(
+            DocumentStatus,
+            name="document_status",
+            values_callable=lambda enum_cls: [e.value for e in enum_cls],
+        ),
         nullable=False,
         default=DocumentStatus.PENDING,
         index=True,
