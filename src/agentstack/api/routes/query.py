@@ -65,12 +65,22 @@ async def handle_query_stream(
     payload: QueryRequest, current: CurrentUserDep, db: DbSession
 ) -> StreamingResponse:
     await _verify_collection(db, payload.collection_id, current.id)
-    await _resolve_conversation_id(payload, db, current.id)
+    conversation_id = await _resolve_conversation_id(payload, db, current.id)
 
     async def event_stream():
         import json
 
-        yield f"data: {json.dumps({'type': 'token', 'data': 'streaming wired in Step 6'})}\n\n"
-        yield f"data: {json.dumps({'type': 'final', 'data': {'citations': []}})}\n\n"
+        async for event in query_service.stream_query(
+            payload,
+            db=db,
+            user_id=current.id,
+            conversation_id=conversation_id,
+            api_key_id=current.api_key_id,
+        ):
+            yield f"data: {json.dumps(event, default=str)}\n\n"
 
-    return StreamingResponse(event_stream(), media_type="text/event-stream")
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )

@@ -88,12 +88,14 @@ src/agentstack/
 | 1 | Collections CRUD (per-user owned) | ✅ Real |
 | 1 | Ingestion (parse, chunk, embed, Qdrant upsert) via Celery | ✅ Real |
 | 1 | Per-user dev bootstrap | ✅ Real |
-| 2 | LangGraph router + retrieval + synthesis | 🟡 Stub |
-| 2 | Hybrid retrieval (dense + BM25) | 🟡 Stub |
-| 2 | Web search tool (Tavily) | 🟡 Stub |
+| 2 | LangGraph router + retrieval + synthesis | ✅ Real |
+| 2 | Hybrid retrieval (dense + BM25 + RRF) | ✅ Real (see ADR-007) |
+| 2 | Cross-encoder reranker | ✅ Real (opt-in via `RERANKER_ENABLED`) |
+| 2 | Web search tool (Tavily) | ✅ Real (gated on `TAVILY_API_KEY`) |
 | 2 | Code execution tool | 🟡 Stub (returns "not enabled") |
-| 2 | Streaming `/query` endpoint | 🟡 Stub |
-| 2 | Conversation memory (sliding window + summary) | 🟡 Stub (table has `summary` column) |
+| 2 | Streaming `/query/stream` (SSE) | ✅ Real |
+| 2 | Conversation memory: prior-turns injection | ✅ Real (sliding window, last 5 Q&A) |
+| 2 | Conversation memory: summary compression | 🟡 Stub (column exists; Week 3) |
 | 3 | RAGAS eval pipeline | 🟡 Stub |
 | 3 | Phoenix tracing wiring | 🟡 Stub |
 | 3 | Semantic + exact LLM cache | 🟡 Stub |

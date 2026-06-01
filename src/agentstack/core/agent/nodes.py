@@ -92,7 +92,8 @@ async def code_exec_node(state: AgentState) -> AgentState:
     return state
 
 
-async def synthesize_node(state: AgentState) -> AgentState:
+def build_synthesis_messages(state: AgentState) -> list[dict]:
+    """Render the LLM input for synthesis. Shared between non-streaming and SSE paths."""
     chunks: list[RetrievedChunk] = list(state.get("retrieved") or [])
     web = state.get("web_results") or []
 
@@ -118,6 +119,12 @@ async def synthesize_node(state: AgentState) -> AgentState:
             "content": SYNTHESIZER_V1.render(question=state["question"], context=context),
         }
     )
+    return messages
+
+
+async def synthesize_node(state: AgentState) -> AgentState:
+    chunks: list[RetrievedChunk] = list(state.get("retrieved") or [])
+    messages = build_synthesis_messages(state)
 
     client = get_chat_client()
     resp = await client.complete(messages=messages, temperature=0.2, max_tokens=800)
@@ -176,6 +183,7 @@ def _record_tokens(resp: dict[str, Any], *, kind: str) -> None:
 
 __all__ = [
     "AgentState",
+    "build_synthesis_messages",
     "code_exec_node",
     "needs_web_fallback",
     "reflect_node",
