@@ -95,12 +95,15 @@ src/agentstack/
 | 2 | Code execution tool | 🟡 Stub (returns "not enabled") |
 | 2 | Streaming `/query/stream` (SSE) | ✅ Real |
 | 2 | Conversation memory: prior-turns injection | ✅ Real (sliding window, last 5 Q&A) |
-| 2 | Conversation memory: summary compression | 🟡 Stub (column exists; Week 3) |
-| 3 | RAGAS eval pipeline | 🟡 Stub |
-| 3 | Phoenix tracing wiring | 🟡 Stub |
-| 3 | Semantic + exact LLM cache | 🟡 Stub |
-| 3 | Rate limiting (per API key) | 🟡 Stub |
-| 3 | Prometheus custom metrics | 🟡 Stub |
+| 2 | Conversation memory: summary compression | 🟡 Stub (column exists; Week 4) |
+| 3 | Eval pipeline (faithfulness + answer relevancy + citation accuracy) | ✅ Real (custom LLM-judge; not RAGAS — see ADR-008) |
+| 3 | Auto-enqueue eval after every non-cached query | ✅ Real |
+| 3 | Phoenix tracing on the hot path (LLM, retrieval, agent nodes) | ✅ Real (OpenInference attrs; see ADR-008) |
+| 3 | Semantic + exact LLM cache w/ ingestion invalidation | ✅ Real (per-collection LRU; see ADR-009) |
+| 3 | Rate limiting (sliding-window log, admin bypass) | ✅ Real (60/min default) |
+| 3 | Prometheus custom metrics | ✅ Real (HTTP via instrumentator; domain via `infra/metrics.py`) |
+| 3 | Phoenix project bucketing for non-default service.name | 🟡 Known quirk — traces land in `default` project |
+| 3 | Worker-side Prom gauges visible in api `/metrics` | 🟡 Known limitation — separate process registries |
 | 4 | Next.js frontend | 🟡 Stub (minimal scaffold) |
 | 4 | CI workflow | ✅ Real |
 | 4 | Load test (locust) | 🟡 Stub |

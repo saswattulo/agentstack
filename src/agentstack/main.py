@@ -62,7 +62,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.add_middleware(RateLimitMiddleware, enabled=False)
+    app.add_middleware(RateLimitMiddleware, enabled=True)
     app.add_middleware(AuthMiddleware)
     app.add_middleware(RequestIDMiddleware)
 

@@ -63,13 +63,19 @@ Visit:
 
 - API:        http://localhost:8000/docs
 - Qdrant:     http://localhost:6333/dashboard
-- Phoenix:    http://localhost:6006
+- Phoenix:    http://localhost:6006 — every `/query` emits a `query → router → retrieve → llm.complete` span tree with OpenInference attributes (note: spans currently land in the `default` project, see ADR-008)
 - Grafana:    http://localhost:3001 (admin/admin)
-- Prometheus: http://localhost:9090
+- Prometheus: http://localhost:9090 — see `agentstack_cache_hits_total`, `agentstack_query_latency_seconds`, `agentstack_llm_tokens_total` etc.
 - Postgres:   `localhost:5442` (mapped from container `5432` to avoid conflicts with a host Postgres)
 - Redis:      `localhost:6390` (mapped from container `6379` similarly)
 
 > Inter-container traffic uses the standard `5432`/`6379`. Only host-side `psql` / `redis-cli` need the remapped ports. Run `make ports` for the full list.
+
+## What's running where
+
+- **Caching:** every query checks the LLM cache (exact + semantic). The second time you ask "what vector store does AgentStack use?" you get `cache_hit=true` in ~1ms. Paraphrase it ("which vector DB does it use?") and you still hit at cosine ≥ 0.95. A new ingestion invalidates the cache for that collection.
+- **Rate limit:** 60 requests/minute per user. Admin users (the dev API key) bypass. Configurable via `RATE_LIMIT_PER_MINUTE` in `.env`.
+- **Auto-eval:** every non-cached query is scored in the background (faithfulness + answer relevancy + citation accuracy). Results land in `eval_results` joined to `query_logs`. Inspect via `GET /api/v1/eval/results/{query_id}`.
 
 ## Try it
 

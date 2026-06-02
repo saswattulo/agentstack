@@ -184,6 +184,10 @@ def ingest_document_task(self, document_id: str) -> dict:
             ).inc()
             CHUNKS_CREATED.labels(collection_id=str(doc.collection_id)).inc(len(chunks))
 
+            from agentstack.core.retrieval.cache import invalidate_collection_sync
+
+            invalidate_collection_sync(str(doc.collection_id))
+
             if doc.source_type in {"pdf", "markdown", "text"}:
                 try:
                     Path(doc.source_uri).unlink(missing_ok=True)
@@ -207,14 +211,47 @@ def ingest_document_task(self, document_id: str) -> dict:
             raise self.retry(exc=exc) if self.request.retries < self.max_retries else exc
 
 
-@celery_app.task(name="agentstack.workers.tasks.eval_query_task")
-def eval_query_task(query_log_id: str) -> dict:
-    """Week 3 — runs RAGAS + custom citation accuracy on a stored query.
+@celery_app.task(
+    name="agentstack.workers.tasks.eval_query_task",
+    bind=True,
+    max_retries=1,
+    default_retry_delay=15,
+)
+def eval_query_task(self, query_log_id: str) -> dict:
+    """Run faithfulness + answer relevancy + citation accuracy on a stored query.
 
-    Stub today so the route can enqueue without erroring.
+    Async metric pipeline is wrapped in asyncio.run so the Celery worker stays
+    sync. Failures are logged + swallowed: an eval flake should never crash the
+    worker or block downstream tasks.
     """
-    logger.info("eval_query_task stub invoked", query_log_id=query_log_id)
-    return {"query_log_id": query_log_id, "status": "stub"}
+    import asyncio
+    from uuid import UUID
+
+    from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
+    from agentstack.core.eval.runner import evaluate_and_persist
+
+    async def _run() -> dict:
+        engine = create_async_engine(settings.sqlalchemy_url, pool_pre_ping=True)
+        try:
+            sm = async_sessionmaker(engine, expire_on_commit=False)
+            async with sm() as session:
+                scores = await evaluate_and_persist(UUID(query_log_id), session)
+                return {
+                    "query_log_id": query_log_id,
+                    "status": "ok",
+                    "faithfulness": scores.faithfulness,
+                    "answer_relevancy": scores.answer_relevancy,
+                    "citation_accuracy": scores.citation_accuracy,
+                }
+        finally:
+            await engine.dispose()
+
+    try:
+        return asyncio.run(_run())
+    except Exception as exc:
+        logger.exception("eval_query_task failed", query_log_id=query_log_id)
+        return {"query_log_id": query_log_id, "status": "error", "error": str(exc)}
 
 
 def _uuid_from_str(name: str) -> str:

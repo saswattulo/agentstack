@@ -12,6 +12,15 @@ from agentstack.core.ingestion.embedder import get_embedder
 from agentstack.core.retrieval.sparse import bm25_search
 from agentstack.infra.logging import get_logger
 from agentstack.infra.metrics import RETRIEVAL_CHUNKS_RETURNED
+from agentstack.infra.tracing import (
+    INPUT_VALUE,
+    OUTPUT_VALUE,
+    RETRIEVAL_QUERY,
+    SPAN_KIND,
+    get_tracer,
+    set_attrs,
+    truncate,
+)
 from agentstack.infra.vectorstore import collection_name, get_qdrant
 
 logger = get_logger(__name__)
@@ -61,10 +70,40 @@ class HybridRetriever:
         if not query.strip():
             return []
 
+        tracer = get_tracer()
+        with tracer.start_as_current_span("retrieval.hybrid") as span:
+            set_attrs(
+                span,
+                **{
+                    SPAN_KIND: "RETRIEVER",
+                    RETRIEVAL_QUERY: query,
+                    INPUT_VALUE: query,
+                    "retrieval.collection_id": str(collection_id),
+                    "retrieval.top_k": int(top_k),
+                    "retrieval.rrf_k": int(self.rrf_k),
+                    "retrieval.reranker_enabled": bool(settings.reranker_enabled),
+                },
+            )
+            return await self._retrieve_inner(
+                span, collection_id, query, top_k, metadata_filter
+            )
+
+    async def _retrieve_inner(
+        self,
+        span,
+        collection_id: UUID | str,
+        query: str,
+        top_k: int,
+        metadata_filter: Filter | dict | None,
+    ) -> list[RetrievedChunk]:
         dense_hits = await self._dense(
             collection_id, query, top_k * self.dense_oversample, metadata_filter
         )
         sparse_hits = await bm25_search(collection_id, query, top_k * self.sparse_oversample)
+        set_attrs(
+            span,
+            **{"retrieval.dense_n": len(dense_hits), "retrieval.sparse_n": len(sparse_hits)},
+        )
 
         dense_by_id: dict[str, RetrievedChunk] = {h.chunk_id: h for h in dense_hits}
         sparse_text_by_id: dict[str, str] = {h.qdrant_point_id: h.text for h in sparse_hits}
@@ -103,6 +142,27 @@ class HybridRetriever:
             ordered = CrossEncoderReranker().rerank(query, ordered, top_k=top_k)
 
         RETRIEVAL_CHUNKS_RETURNED.observe(len(ordered))
+
+        set_attrs(
+            span,
+            **{
+                "retrieval.fused_n": len(ordered),
+                OUTPUT_VALUE: truncate(
+                    [
+                        {"chunk_id": c.chunk_id, "score": c.score, "text": c.text[:200]}
+                        for c in ordered
+                    ]
+                ),
+            },
+        )
+        for i, chunk in enumerate(ordered):
+            span.set_attributes(
+                {
+                    f"retrieval.documents.{i}.document.id": chunk.chunk_id,
+                    f"retrieval.documents.{i}.document.score": float(chunk.score),
+                    f"retrieval.documents.{i}.document.content": truncate(chunk.text),
+                }
+            )
         return ordered
 
     async def _dense(

@@ -17,6 +17,14 @@ from agentstack.core.retrieval.hybrid import HybridRetriever, RetrievedChunk
 from agentstack.infra.llm import get_chat_client
 from agentstack.infra.logging import get_logger
 from agentstack.infra.metrics import LLM_TOKENS
+from agentstack.infra.tracing import (
+    INPUT_VALUE,
+    OUTPUT_VALUE,
+    SPAN_KIND,
+    get_tracer,
+    set_attrs,
+    truncate,
+)
 
 logger = get_logger(__name__)
 
@@ -43,53 +51,77 @@ _VALID_INTENTS = {"factual", "analytical", "comparison", "web", "code", "convers
 
 
 async def router_node(state: AgentState) -> AgentState:
-    client = get_chat_client()
-    prompt = ROUTER_V1.render(question=state["question"])
-    resp = await client.complete(
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.0,
-        max_tokens=8,
-    )
-    raw = _extract_text(resp).strip().lower()
-    intent = next(
-        (label for label in _VALID_INTENTS if raw.startswith(label) or raw.endswith(label)),
-        "factual",
-    )
-    state["intent"] = intent
-    _record_tokens(resp, kind="router")
-    return state
+    tracer = get_tracer()
+    with tracer.start_as_current_span("agent.router") as span:
+        set_attrs(span, **{SPAN_KIND: "CHAIN", INPUT_VALUE: state.get("question", "")})
+        client = get_chat_client()
+        prompt = ROUTER_V1.render(question=state["question"])
+        resp = await client.complete(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0,
+            max_tokens=8,
+        )
+        raw = _extract_text(resp).strip().lower()
+        intent = next(
+            (label for label in _VALID_INTENTS if raw.startswith(label) or raw.endswith(label)),
+            "factual",
+        )
+        state["intent"] = intent
+        _record_tokens(resp, kind="router")
+        set_attrs(span, **{"agent.intent": intent, OUTPUT_VALUE: intent})
+        return state
 
 
 async def retrieve_node(state: AgentState) -> AgentState:
-    retriever = HybridRetriever()
-    chunks = await retriever.retrieve(
-        state["collection_id"],
-        state["question"],
-        top_k=int(state.get("top_k", 5)),
-    )
-    state["retrieved"] = chunks
-    state.setdefault("tools_used", []).append("retrieve")
-    return state
+    tracer = get_tracer()
+    with tracer.start_as_current_span("agent.retrieve") as span:
+        set_attrs(span, **{SPAN_KIND: "CHAIN", INPUT_VALUE: state.get("question", "")})
+        retriever = HybridRetriever()
+        chunks = await retriever.retrieve(
+            state["collection_id"],
+            state["question"],
+            top_k=int(state.get("top_k", 5)),
+        )
+        state["retrieved"] = chunks
+        state.setdefault("tools_used", []).append("retrieve")
+        set_attrs(span, **{"agent.retrieved_n": len(chunks)})
+        return state
 
 
 async def web_search_node(state: AgentState) -> AgentState:
-    if not state.get("use_web_search", True) or not settings.tavily_api_key:
-        state["web_results"] = []
+    tracer = get_tracer()
+    with tracer.start_as_current_span("agent.web_search") as span:
+        set_attrs(
+            span,
+            **{
+                SPAN_KIND: "TOOL",
+                "tool.name": "tavily.web_search",
+                INPUT_VALUE: state.get("question", ""),
+            },
+        )
+        if not state.get("use_web_search", True) or not settings.tavily_api_key:
+            state["web_results"] = []
+            set_attrs(span, **{"agent.web_results_n": 0, "tool.skipped": True})
+            return state
+        try:
+            result = run_web_search(state["question"], max_results=5)
+            state["web_results"] = result.get("results", [])
+        except Exception as e:
+            logger.warning("web_search failed", error=str(e))
+            state["web_results"] = []
+            span.record_exception(e)
+        state.setdefault("tools_used", []).append("web_search")
+        set_attrs(span, **{"agent.web_results_n": len(state["web_results"])})
         return state
-    try:
-        result = run_web_search(state["question"], max_results=5)
-        state["web_results"] = result.get("results", [])
-    except Exception as e:
-        logger.warning("web_search failed", error=str(e))
-        state["web_results"] = []
-    state.setdefault("tools_used", []).append("web_search")
-    return state
 
 
 async def code_exec_node(state: AgentState) -> AgentState:
-    state.setdefault("tools_used", []).append("code_exec")
-    state["error"] = "code_exec is disabled in this build."
-    return state
+    tracer = get_tracer()
+    with tracer.start_as_current_span("agent.code_exec") as span:
+        set_attrs(span, **{SPAN_KIND: "TOOL", "tool.name": "code_exec", "tool.disabled": True})
+        state.setdefault("tools_used", []).append("code_exec")
+        state["error"] = "code_exec is disabled in this build."
+        return state
 
 
 def build_synthesis_messages(state: AgentState) -> list[dict]:
@@ -123,12 +155,23 @@ def build_synthesis_messages(state: AgentState) -> list[dict]:
 
 
 async def synthesize_node(state: AgentState) -> AgentState:
-    chunks: list[RetrievedChunk] = list(state.get("retrieved") or [])
-    messages = build_synthesis_messages(state)
+    tracer = get_tracer()
+    with tracer.start_as_current_span("agent.synthesize") as span:
+        chunks: list[RetrievedChunk] = list(state.get("retrieved") or [])
+        messages = build_synthesis_messages(state)
+        set_attrs(
+            span,
+            **{
+                SPAN_KIND: "CHAIN",
+                INPUT_VALUE: truncate(messages),
+                "agent.context_chunks": len(chunks),
+            },
+        )
 
-    client = get_chat_client()
-    resp = await client.complete(messages=messages, temperature=0.2, max_tokens=800)
-    answer = _extract_text(resp).strip()
+        client = get_chat_client()
+        resp = await client.complete(messages=messages, temperature=0.2, max_tokens=800)
+        answer = _extract_text(resp).strip()
+        set_attrs(span, **{OUTPUT_VALUE: truncate(answer)})
 
     state["answer"] = answer
     citations = extract_citations(answer, chunks)

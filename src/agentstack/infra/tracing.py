@@ -1,11 +1,14 @@
 """Phoenix / OpenTelemetry tracing setup.
 
-Week 3 will instrument LLM + retrieval calls via OpenInference. For now this
-just registers a tracer provider pointing at the Phoenix collector so traces
-emitted by feature code show up in the UI.
+We use raw `opentelemetry-api` directly. Attribute keys follow OpenInference
+semantic conventions so Phoenix renders the trace tree as a familiar
+agent / LLM / retriever stack.
 """
 
 from __future__ import annotations
+
+import json
+from typing import Any
 
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -44,3 +47,50 @@ def configure_tracing() -> None:
 
 def get_tracer(name: str = "agentstack") -> trace.Tracer:
     return trace.get_tracer(name)
+
+
+# ---- OpenInference attribute keys ----
+
+SPAN_KIND = "openinference.span.kind"
+
+LLM_PROVIDER = "llm.provider"
+LLM_MODEL = "llm.model_name"
+LLM_PROMPT_TOKENS = "llm.token_count.prompt"
+LLM_COMPLETION_TOKENS = "llm.token_count.completion"
+LLM_TOTAL_TOKENS = "llm.token_count.total"
+LLM_PARAMS = "llm.invocation_parameters"
+
+INPUT_VALUE = "input.value"
+INPUT_MIME = "input.mime_type"
+OUTPUT_VALUE = "output.value"
+OUTPUT_MIME = "output.mime_type"
+
+RETRIEVAL_QUERY = "retrieval.query"
+
+SESSION_ID = "session.id"
+USER_ID = "user.id"
+
+
+# ---- helpers ----
+
+_TRUNCATE = 2000
+
+
+def truncate(value: Any) -> str:
+    s = value if isinstance(value, str) else json.dumps(value, default=str)
+    if len(s) > _TRUNCATE:
+        return s[:_TRUNCATE] + f"…(+{len(s) - _TRUNCATE} chars)"
+    return s
+
+
+def set_attrs(span, **attrs: Any) -> None:
+    """Filter None, stringify non-primitives, then set on the span."""
+    clean: dict[str, Any] = {}
+    for k, v in attrs.items():
+        if v is None:
+            continue
+        if isinstance(v, (str, bool, int, float)):
+            clean[k] = v
+        else:
+            clean[k] = truncate(v)
+    span.set_attributes(clean)
