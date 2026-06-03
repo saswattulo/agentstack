@@ -73,6 +73,15 @@ class Settings(BaseSettings):
     semantic_cache_threshold: float = 0.95
     cache_ttl_seconds: int = 86_400
 
+    # Voice (Week 4)
+    voice_enabled: bool = True
+    voice_asr_model: str = "whisper-large-v3"
+    voice_tts_model_path: str = "/models/piper/en_US-amy-medium.onnx"
+    voice_vad_silence_ms: int = 800
+    voice_vad_min_utterance_ms: int = 250
+    voice_vad_max_utterance_ms: int = 30_000
+    voice_max_concurrent_sessions_per_user: int = 3
+
     @computed_field  # type: ignore[prop-decorator]
     @property
     def sqlalchemy_url(self) -> str:

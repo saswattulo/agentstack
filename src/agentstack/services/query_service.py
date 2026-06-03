@@ -239,8 +239,11 @@ async def stream_query(
     Events conform to `schemas.query.StreamingEvent.type`.
     """
     tracer = get_tracer()
-    span_cm = tracer.start_as_current_span("query")
-    span = span_cm.__enter__()
+    # Manual span (not `start_as_current_span`) — async generators can be
+    # iterated from a task context different from the one that created the
+    # span, which corrupts OTel's contextvars and breaks the underlying
+    # asyncio call chain. Manual start + finally end keeps the span clean.
+    span = tracer.start_span("query")
     start = time.perf_counter()
     query_id = uuid4()
     model = settings.groq_chat_model
@@ -305,7 +308,7 @@ async def stream_query(
                     "cache_hit": True,
                 },
             }
-            span_cm.__exit__(None, None, None)
+            span.end()
             return
 
         prior_turns: list[dict] = []
@@ -442,7 +445,8 @@ async def stream_query(
             "type": "error",
             "data": {"error": f"{exc.__class__.__name__}: {exc}", "query_id": str(query_id)},
         }
-        span_cm.__exit__(type(exc), exc, exc.__traceback__)
+        span.record_exception(exc)
+        span.end()
 
 
 def _enqueue_eval(query_id: UUID) -> None:

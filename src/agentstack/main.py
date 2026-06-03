@@ -19,6 +19,7 @@ from agentstack.api.routes import (
     health,
     ingest,
     query,
+    voice,
 )
 from agentstack.config import settings
 from agentstack.infra.db import dispose_engine
@@ -80,6 +81,7 @@ def create_app() -> FastAPI:
     app.include_router(conversations.router)
     app.include_router(query.router)
     app.include_router(eval_routes.router)
+    app.include_router(voice.router)
 
     @app.exception_handler(AppError)
     async def app_error_handler(request: Request, exc: AppError):

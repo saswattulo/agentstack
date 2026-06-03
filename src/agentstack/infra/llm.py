@@ -58,6 +58,14 @@ class ChatClient(Protocol):
         **kwargs: Any,
     ) -> AsyncIterator[str]: ...
 
+    async def transcribe(
+        self,
+        audio_wav: bytes,
+        *,
+        language: str | None = None,
+        prompt: str | None = None,
+    ) -> str: ...
+
 
 class GroqChatClient:
     def __init__(self, model: str | None = None, api_key: str | None = None) -> None:
@@ -155,6 +163,39 @@ class GroqChatClient:
                     buf.append(delta)
                     yield delta
             set_attrs(span, **{OUTPUT_VALUE: truncate("".join(buf))})
+
+    async def transcribe(
+        self,
+        audio_wav: bytes,
+        *,
+        language: str | None = None,
+        prompt: str | None = None,
+    ) -> str:
+        """Groq Whisper-large-v3. `audio_wav` should be a complete WAV blob."""
+        tracer = get_tracer()
+        with tracer.start_as_current_span("asr.whisper") as span:
+            set_attrs(
+                span,
+                **{
+                    SPAN_KIND: "LLM",
+                    LLM_PROVIDER: "groq",
+                    LLM_MODEL: settings.voice_asr_model,
+                    "audio.bytes": len(audio_wav),
+                    "audio.language": language or "auto",
+                },
+            )
+            kwargs: dict[str, Any] = {
+                "model": settings.voice_asr_model,
+                "file": ("input.wav", audio_wav, "audio/wav"),
+            }
+            if language:
+                kwargs["language"] = language
+            if prompt:
+                kwargs["prompt"] = prompt
+            resp = await self._client.audio.transcriptions.create(**kwargs)
+            text = (getattr(resp, "text", "") or "").strip()
+            set_attrs(span, **{OUTPUT_VALUE: truncate(text), "text.chars": len(text)})
+            return text
 
 
 _client: ChatClient | None = None
