@@ -104,7 +104,14 @@ src/agentstack/
 | 3 | Prometheus custom metrics | ✅ Real (HTTP via instrumentator; domain via `infra/metrics.py`) |
 | 3 | Phoenix project bucketing for non-default service.name | 🟡 Known quirk — traces land in `default` project |
 | 3 | Worker-side Prom gauges visible in api `/metrics` | 🟡 Known limitation — separate process registries |
-| 4 | Next.js frontend | 🟡 Stub (minimal scaffold) |
+| 4 | Voice agent — Groq Whisper ASR | ✅ Real |
+| 4 | Voice agent — Piper TTS in-process | ✅ Real (model auto-downloads; see ADR-010) |
+| 4 | Voice agent — silero VAD + UtteranceSegmenter | ✅ Real |
+| 4 | Voice agent — `/api/v1/voice/stream` WebSocket | ✅ Real (JWT in first frame) |
+| 4 | Voice UI — Next.js `/voice` page + AudioWorklet | ✅ Real |
+| 4 | Voice barge-in / interruption | 🟡 Stub (Week 5) |
+| 4 | Per-user concurrent voice session cap | 🟡 Stub (Week 5) |
+| 4 | Full chat UI (text) in Next.js | 🟡 Stub (Week 5 — pushed by voice) |
 | 4 | CI workflow | ✅ Real |
 | 4 | Load test (locust) | 🟡 Stub |
 

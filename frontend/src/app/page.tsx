@@ -8,6 +8,9 @@ export default function HomePage() {
       </p>
       <ul>
         <li>
+          <a href="/voice">Voice agent (Week 4)</a> — talk to your collection
+        </li>
+        <li>
           <a href="http://localhost:8000/docs">API (Swagger)</a>
         </li>
         <li>

@@ -76,6 +76,7 @@ Visit:
 - **Caching:** every query checks the LLM cache (exact + semantic). The second time you ask "what vector store does AgentStack use?" you get `cache_hit=true` in ~1ms. Paraphrase it ("which vector DB does it use?") and you still hit at cosine ≥ 0.95. A new ingestion invalidates the cache for that collection.
 - **Rate limit:** 60 requests/minute per user. Admin users (the dev API key) bypass. Configurable via `RATE_LIMIT_PER_MINUTE` in `.env`.
 - **Auto-eval:** every non-cached query is scored in the background (faithfulness + answer relevancy + citation accuracy). Results land in `eval_results` joined to `query_logs`. Inspect via `GET /api/v1/eval/results/{query_id}`.
+- **Voice (Week 4):** `cd frontend && pnpm install && pnpm dev` then `http://localhost:3000/voice`. Log in, pick a collection, click "Connect & record", speak. Pipeline: mic → 16 kHz PCM via AudioWorklet → WebSocket `/api/v1/voice/stream` → silero VAD → Groq Whisper → existing agent → per-sentence Piper TTS → audio back. End-to-end latency ≈ 1.5 s on a warm stack. See ADR-010 for details.
 
 ## Try it
 
