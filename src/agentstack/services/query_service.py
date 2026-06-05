@@ -414,9 +414,9 @@ async def stream_query(
                 "tools_used": list(state.get("tools_used") or []),
                 "latency_ms": latency_ms,
                 "model": model,
+                "cache_hit": False,
             },
         }
-        span_cm.__exit__(None, None, None)
 
     except Exception as exc:
         logger.exception("streaming query failed")
