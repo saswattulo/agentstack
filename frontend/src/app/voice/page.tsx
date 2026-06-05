@@ -66,6 +66,11 @@ export default function VoicePage() {
       case "final":
         setCitations(ev.citations || []);
         break;
+      case "cancelled":
+        queueRef.current.cancel();
+        setAnswer("");
+        setCitations([]);
+        break;
       case "error":
         setError(ev.message);
         break;

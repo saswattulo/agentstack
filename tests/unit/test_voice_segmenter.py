@@ -112,3 +112,37 @@ def test_reset_clears_state():
     assert seg._buf == bytearray()
     assert seg._speech_frames == 0
     assert seg._silence_frames == 0
+
+
+@pytest.mark.unit
+def test_is_recording_tracks_silence_to_speech_transition():
+    """The barge-in path samples this property before/after feed() to detect
+    a silence→speech edge."""
+    seg = UtteranceSegmenter(vad=StubVAD([False, True, True, False, False, False, False]))
+    assert seg.is_recording is False  # before any frame
+
+    seg.feed(FRAME)  # silence
+    assert seg.is_recording is False
+
+    seg.feed(FRAME)  # first speech frame
+    assert seg.is_recording is True
+
+    seg.feed(FRAME)  # more speech
+    assert seg.is_recording is True
+
+
+@pytest.mark.unit
+def test_is_recording_resets_after_utterance_emit():
+    cfg = SegmenterConfig(silence_ms=96, min_utterance_ms=32, max_utterance_ms=10_000)
+    # 1 speech + 3 silence at this config: min=32ms (1 frame), silence=96ms (3 frames)
+    seg = UtteranceSegmenter(
+        vad=StubVAD([True, False, False, False]),
+        config=cfg,
+    )
+    seg.feed(FRAME)
+    assert seg.is_recording is True
+    seg.feed(FRAME)
+    seg.feed(FRAME)
+    out = seg.feed(FRAME)
+    assert out is not None
+    assert seg.is_recording is False  # reset after emit

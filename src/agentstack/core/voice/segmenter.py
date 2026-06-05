@@ -43,6 +43,13 @@ class UtteranceSegmenter:
         self._silence_frames = 0
         self._speech_frames = 0
 
+    @property
+    def is_recording(self) -> bool:
+        """True between the first detected speech frame and utterance close.
+        Lets the WS route detect "speech just started" by sampling the value
+        before and after each feed()."""
+        return self._speech_frames > 0
+
     def feed(self, frame: bytes) -> bytes | None:
         """Feed one VAD-sized frame. Returns the utterance PCM bytes when one closes."""
         if len(frame) != FRAME_BYTES:

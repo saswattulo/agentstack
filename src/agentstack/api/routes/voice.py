@@ -173,6 +173,18 @@ async def voice_stream(ws: WebSocket) -> None:
     segmenter = UtteranceSegmenter(config=SegmenterConfig())
     turn_task: asyncio.Task | None = None
 
+    async def _cancel_in_flight(reason: str) -> None:
+        nonlocal turn_task
+        if turn_task is None or turn_task.done():
+            return
+        turn_task.cancel()
+        try:
+            await turn_task
+        except (asyncio.CancelledError, Exception):
+            pass
+        turn_task = None
+        await _send_json(ws, {"type": "cancelled", "reason": reason})
+
     try:
         while True:
             msg = await ws.receive()
@@ -191,12 +203,22 @@ async def voice_stream(ws: WebSocket) -> None:
                     )
                     continue
 
+                was_recording = segmenter.is_recording
                 try:
                     utterance = segmenter.feed(frame)
                 except Exception as exc:
                     logger.exception("vad/segmenter error")
                     await _send_json(ws, {"type": "error", "message": f"vad: {exc}"})
                     continue
+
+                # Barge-in: speech started during in-flight turn → cancel it.
+                if (
+                    not was_recording
+                    and segmenter.is_recording
+                    and turn_task is not None
+                    and not turn_task.done()
+                ):
+                    await _cancel_in_flight("user spoke during playback")
 
                 if utterance and (turn_task is None or turn_task.done()):
                     turn_task = asyncio.create_task(

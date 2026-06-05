@@ -308,7 +308,6 @@ async def stream_query(
                     "cache_hit": True,
                 },
             }
-            span.end()
             return
 
         prior_turns: list[dict] = []
@@ -446,6 +445,7 @@ async def stream_query(
             "data": {"error": f"{exc.__class__.__name__}: {exc}", "query_id": str(query_id)},
         }
         span.record_exception(exc)
+    finally:
         span.end()
 
 

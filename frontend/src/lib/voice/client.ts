@@ -6,6 +6,7 @@ export type VoiceEvent =
   | { type: "transcript"; text: string }
   | { type: "agent_token"; delta: string }
   | { type: "final"; query_id: string; intent: string; citations: { index: number; preview: string }[]; latency_ms: number; cache_hit?: boolean }
+  | { type: "cancelled"; reason?: string }
   | { type: "error"; message: string }
   | { type: "pong" };
 
@@ -134,19 +135,34 @@ export class VoiceClient {
   }
 }
 
-// Sequential WAV playback queue.
+// Sequential WAV playback queue, with cancel() for barge-in.
 export class AudioQueue {
   private ctx: AudioContext | null = null;
   private playing = false;
   private q: ArrayBuffer[] = [];
+  private currentSource: AudioBufferSourceNode | null = null;
 
   enqueue(wav: ArrayBuffer) {
     this.q.push(wav);
     if (!this.playing) void this.drain();
   }
 
+  /** Drop pending audio without interrupting what's already playing. */
   clear() {
     this.q = [];
+  }
+
+  /** Drop pending audio AND stop the current source — used for barge-in. */
+  cancel() {
+    this.q = [];
+    if (this.currentSource) {
+      try {
+        this.currentSource.stop();
+      } catch {
+        // already stopped / never started
+      }
+      this.currentSource = null;
+    }
   }
 
   private async drain() {
@@ -160,7 +176,11 @@ export class AudioQueue {
           const src = this.ctx!.createBufferSource();
           src.buffer = buf;
           src.connect(this.ctx!.destination);
-          src.onended = () => resolve();
+          src.onended = () => {
+            if (this.currentSource === src) this.currentSource = null;
+            resolve();
+          };
+          this.currentSource = src;
           src.start();
         });
       } catch (e) {
