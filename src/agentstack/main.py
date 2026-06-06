@@ -56,6 +56,13 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    # Middleware is applied outermost-first in REVERSE add order, so the last
+    # add_middleware call is the OUTERMOST layer. CORS must be outermost: it
+    # handles OPTIONS preflight itself and decorates every response — including
+    # the 401s that AuthMiddleware short-circuits with — with CORS headers.
+    app.add_middleware(RateLimitMiddleware, enabled=True)
+    app.add_middleware(AuthMiddleware)
+    app.add_middleware(RequestIDMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"] if settings.app_env == "dev" else [],
@@ -63,9 +70,6 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.add_middleware(RateLimitMiddleware, enabled=True)
-    app.add_middleware(AuthMiddleware)
-    app.add_middleware(RequestIDMiddleware)
 
     Instrumentator(
         should_group_status_codes=True,

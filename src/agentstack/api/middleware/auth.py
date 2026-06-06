@@ -50,7 +50,8 @@ def _unauthorized(message: str) -> JSONResponse:
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        if _is_public(request.url.path):
+        # CORS preflight carries no credentials by design — never 401 it.
+        if request.method == "OPTIONS" or _is_public(request.url.path):
             return await call_next(request)
 
         auth_header = request.headers.get(AUTH_HEADER)
