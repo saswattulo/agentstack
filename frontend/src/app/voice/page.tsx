@@ -1,19 +1,13 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import {
-  Collection,
-  getAccessToken,
-  listCollections,
-  login,
-} from "@/lib/api";
+import { getAccessToken, listCollections } from "@/lib/api";
 import { AudioQueue, VoiceClient, VoiceEvent, VoiceState } from "@/lib/voice/client";
 
 type Citation = { index: number; preview: string };
 
 export default function VoicePage() {
-  const [token, setToken] = useState<string | null>(null);
-  const [collections, setCollections] = useState<Collection[]>([]);
   const [selected, setSelected] = useState<string>("");
   const [state, setState] = useState<VoiceState>("idle");
   const [transcript, setTranscript] = useState<string>("");
@@ -24,34 +18,12 @@ export default function VoicePage() {
   const clientRef = useRef<VoiceClient | null>(null);
   const queueRef = useRef<AudioQueue>(new AudioQueue());
 
-  // Boot: if we have a JWT, fetch collections.
-  useEffect(() => {
-    const t = getAccessToken();
-    if (t) {
-      setToken(t);
-      listCollections()
-        .then((d) => {
-          setCollections(d.items);
-          if (d.items[0]) setSelected(d.items[0].id);
-        })
-        .catch((e) => setError(String(e)));
-    }
-  }, []);
+  const collections = useQuery({ queryKey: ["collections"], queryFn: listCollections });
 
-  async function handleLogin(form: FormData) {
-    try {
-      const res = await login(
-        String(form.get("email") || ""),
-        String(form.get("password") || ""),
-      );
-      setToken(res.access_token);
-      const list = await listCollections();
-      setCollections(list.items);
-      if (list.items[0]) setSelected(list.items[0].id);
-    } catch (e) {
-      setError(String(e));
-    }
-  }
+  useEffect(() => {
+    const items = collections.data?.items ?? [];
+    if (items[0] && !selected) setSelected(items[0].id);
+  }, [collections.data, selected]);
 
   function onEvent(ev: VoiceEvent) {
     switch (ev.type) {
@@ -78,6 +50,7 @@ export default function VoicePage() {
   }
 
   async function connectAndStart() {
+    const token = getAccessToken();
     if (!token || !selected) return;
     setError(null);
     const c = new VoiceClient({
@@ -105,113 +78,92 @@ export default function VoicePage() {
     setState("closed");
   }
 
-  if (!token) {
-    return (
-      <main style={pageStyle}>
-        <h1>Voice agent</h1>
-        <p>Log in to continue.</p>
-        <form
-          action={handleLogin}
-          style={{ display: "grid", gap: "0.5rem", maxWidth: 320 }}
-        >
-          <input name="email" type="email" placeholder="email" required />
-          <input name="password" type="password" placeholder="password" required />
-          <button type="submit">Log in</button>
-        </form>
-        {error && <p style={{ color: "salmon" }}>{error}</p>}
-      </main>
-    );
-  }
-
   const recording = state === "recording";
   const connected = state === "connected" || state === "recording";
+  const stripped = answer.replace(/<think>[\s\S]*?<\/think>/g, "").replace(/<think>[\s\S]*$/g, "").trim();
 
   return (
-    <main style={pageStyle}>
-      <h1>Voice agent</h1>
-      <p style={{ opacity: 0.7, fontSize: 14 }}>
-        State: <code>{state}</code>. Click <em>Connect & record</em>, then speak.
-        The agent answers in voice and text. Pause ~800 ms to end your turn.
+    <div className="mx-auto max-w-2xl p-6">
+      <h1 className="mb-1 text-xl font-semibold">Voice agent</h1>
+      <p className="mb-4 text-sm text-muted">
+        State: <code>{state}</code>. Connect, then speak — the agent answers in voice
+        and text. Pause ~800 ms to end your turn. Start talking again to interrupt.
       </p>
 
-      <section style={{ marginTop: "1rem", display: "grid", gap: "0.75rem" }}>
-        <label>
-          Collection
+      <div className="card mb-4 grid gap-3 p-4">
+        <div>
+          <label className="mb-1 block text-xs text-muted">Collection</label>
           <select
+            className="input"
             value={selected}
             onChange={(e) => setSelected(e.target.value)}
             disabled={connected}
-            style={{ width: "100%", padding: "0.5rem" }}
           >
-            {collections.map((c) => (
+            {(collections.data?.items ?? []).length === 0 && (
+              <option value="">No collections</option>
+            )}
+            {(collections.data?.items ?? []).map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>
             ))}
           </select>
-        </label>
+        </div>
 
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div className="flex flex-wrap gap-2">
           {!connected && (
-            <button onClick={connectAndStart} disabled={!selected}>
-              Connect &amp; record
+            <button className="btn btn-primary" onClick={connectAndStart} disabled={!selected}>
+              🎙 Connect &amp; record
             </button>
           )}
-          {recording && <button onClick={stop}>Stop mic</button>}
+          {recording && (
+            <button className="btn" onClick={stop}>
+              Stop mic
+            </button>
+          )}
           {connected && !recording && (
-            <button onClick={() => clientRef.current?.startRecording()}>
+            <button className="btn" onClick={() => clientRef.current?.startRecording()}>
               Resume mic
             </button>
           )}
-          {connected && <button onClick={disconnect}>Disconnect</button>}
+          {connected && (
+            <button className="btn btn-danger" onClick={disconnect}>
+              Disconnect
+            </button>
+          )}
         </div>
-      </section>
+      </div>
 
-      <section style={{ marginTop: "2rem" }}>
-        <h2 style={{ margin: 0, fontSize: 18 }}>You said</h2>
-        <p style={transcriptStyle}>{transcript || <em style={{ opacity: 0.5 }}>(waiting)</em>}</p>
+      <section className="grid gap-4">
+        <div>
+          <h2 className="mb-1 text-sm font-medium text-muted">You said</h2>
+          <p className="card min-h-[2.5rem] px-3 py-2 text-sm">
+            {transcript || <span className="text-muted">(waiting)</span>}
+          </p>
+        </div>
 
-        <h2 style={{ margin: 0, fontSize: 18, marginTop: "1rem" }}>Agent</h2>
-        <p style={answerStyle}>{answer || <em style={{ opacity: 0.5 }}>(waiting)</em>}</p>
+        <div>
+          <h2 className="mb-1 text-sm font-medium text-muted">Agent</h2>
+          <p className="card min-h-[2.5rem] whitespace-pre-wrap px-3 py-2 text-sm">
+            {stripped || <span className="text-muted">(waiting)</span>}
+          </p>
+        </div>
 
         {citations.length > 0 && (
-          <div style={{ marginTop: "0.75rem" }}>
-            <strong>Citations:</strong>
-            <ul>
+          <div>
+            <h2 className="mb-1 text-sm font-medium text-muted">Citations</h2>
+            <ul className="grid gap-1">
               {citations.map((c) => (
-                <li key={c.index}>
-                  <code>[{c.index}]</code> {c.preview}
+                <li key={c.index} className="card px-3 py-2 text-xs text-muted">
+                  <code className="text-accent">[{c.index}]</code> {c.preview}
                 </li>
               ))}
             </ul>
           </div>
         )}
 
-        {error && (
-          <p style={{ color: "salmon", marginTop: "1rem" }}>error: {error}</p>
-        )}
+        {error && <p className="text-sm text-danger">error: {error}</p>}
       </section>
-    </main>
+    </div>
   );
 }
-
-const pageStyle: React.CSSProperties = {
-  padding: "2rem",
-  maxWidth: 800,
-  margin: "0 auto",
-};
-
-const transcriptStyle: React.CSSProperties = {
-  background: "#1f2937",
-  padding: "0.75rem 1rem",
-  borderRadius: 8,
-  minHeight: "2.5rem",
-};
-
-const answerStyle: React.CSSProperties = {
-  background: "#111827",
-  padding: "0.75rem 1rem",
-  borderRadius: 8,
-  minHeight: "2.5rem",
-  whiteSpace: "pre-wrap",
-};

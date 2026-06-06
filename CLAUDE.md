@@ -28,7 +28,7 @@ Built as a portfolio project. The interview signal comes from production pattern
 | **Tenancy** | **Per-user private collections + per-user conversations.** Every resource has a user owner. |
 | Tracing | Arize Phoenix (self-hosted in Compose) | Don't wire LangSmith. |
 | Metrics | Prometheus + Grafana | Custom domain metrics in `infra/metrics.py`. |
-| Frontend | Next.js (Week 4) | Scaffolded under `frontend/`. |
+| Frontend | Next.js App Router + Tailwind + React Query | Full chat/voice/settings UI in `frontend/`. SSE-over-POST streaming; JWT in localStorage. See ADR-011. |
 | Deploy | Local Docker Compose only | No Fly/Railway/K8s yet. CI builds + pushes images to GHCR. |
 
 ## Auth model (ADR-006)
@@ -109,11 +109,15 @@ src/agentstack/
 | 4 | Voice agent — silero VAD + UtteranceSegmenter | ✅ Real |
 | 4 | Voice agent — `/api/v1/voice/stream` WebSocket | ✅ Real (JWT in first frame) |
 | 4 | Voice UI — Next.js `/voice` page + AudioWorklet | ✅ Real |
-| 4 | Voice barge-in / interruption | 🟡 Stub (Week 5) |
-| 4 | Per-user concurrent voice session cap | 🟡 Stub (Week 5) |
-| 4 | Full chat UI (text) in Next.js | 🟡 Stub (Week 5 — pushed by voice) |
+| 4 | Voice barge-in / interruption | ✅ Real (cancel in-flight turn on user speech) |
+| 4 | Per-user concurrent voice session cap | 🟡 Stub (Week 6) |
 | 4 | CI workflow | ✅ Real |
 | 4 | Load test (locust) | 🟡 Stub |
+| 5 | Full chat UI — auth, streaming chat, citations, eval | ✅ Real (Next.js App Router; see ADR-011) |
+| 5 | Collections + document upload/manage UI | ✅ Real |
+| 5 | API-key management UI | ✅ Real |
+| 5 | Voice page restyled into shared shell | ✅ Real |
+| 5 | Conversation summarization | 🟡 Stub (column exists; Week 6) |
 
 ## Common commands
 
