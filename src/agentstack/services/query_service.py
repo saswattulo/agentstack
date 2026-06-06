@@ -92,6 +92,7 @@ async def run_query(
                     latency_ms=latency_ms,
                     model=cached.model,
                     cache_hit=True,
+                    extra={"cache_hit_kind": cached.hit_kind, "cache_hit_score": cached.hit_score},
                 )
             )
             await db.commit()
@@ -102,6 +103,7 @@ async def run_query(
                     "query.citations_n": len(cached.citations),
                     "query.latency_ms": latency_ms,
                     "query.cache_hit": True,
+                    "query.cache_hit_kind": cached.hit_kind,
                     OUTPUT_VALUE: truncate(cached.answer),
                 },
             )
@@ -112,6 +114,7 @@ async def run_query(
                 intent=cached.intent,
                 tools_used=[],
                 cache_hit=True,
+                cache_hit_kind=cached.hit_kind,
                 latency_ms=latency_ms,
                 model=cached.model,
             )
@@ -281,6 +284,7 @@ async def stream_query(
                     latency_ms=latency_ms,
                     model=cached.model,
                     cache_hit=True,
+                    extra={"cache_hit_kind": cached.hit_kind, "cache_hit_score": cached.hit_score},
                 )
             )
             await db.commit()
@@ -291,6 +295,7 @@ async def stream_query(
                     "query.citations_n": len(cached.citations),
                     "query.latency_ms": latency_ms,
                     "query.cache_hit": True,
+                    "query.cache_hit_kind": cached.hit_kind,
                     OUTPUT_VALUE: truncate(cached.answer),
                 },
             )
@@ -306,6 +311,7 @@ async def stream_query(
                     "latency_ms": latency_ms,
                     "model": cached.model,
                     "cache_hit": True,
+                    "cache_hit_kind": cached.hit_kind,
                 },
             }
             return

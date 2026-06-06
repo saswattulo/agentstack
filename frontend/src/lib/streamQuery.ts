@@ -13,6 +13,7 @@ export interface FinalPayload {
   latency_ms: number | null;
   model: string | null;
   cache_hit?: boolean;
+  cache_hit_kind?: string | null;
 }
 
 export type StreamEvent =

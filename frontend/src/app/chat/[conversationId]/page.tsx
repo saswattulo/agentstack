@@ -37,6 +37,8 @@ export default function ConversationPage() {
           queryId: turn.queryId,
           intent: turn.intent,
           latencyMs: turn.latencyMs,
+          cacheHit: turn.cacheHit,
+          cacheHitKind: turn.cacheHitKind,
         },
       ]);
       qc.invalidateQueries({ queryKey: ["conversations"] });
@@ -129,6 +131,7 @@ export default function ConversationPage() {
           intent: final.intent,
           toolsUsed: final.tools_used,
           cacheHit: final.cache_hit,
+          cacheHitKind: final.cache_hit_kind,
           latencyMs: final.latency_ms,
         },
       ]);

@@ -41,6 +41,9 @@ class CachedAnswer:
     citations: list[dict]
     model: str
     intent: str | None = None
+    # populated on retrieval (not persisted): which path served the hit
+    hit_kind: str | None = None  # "exact" | "semantic"
+    hit_score: float | None = None  # cosine similarity, for semantic hits
 
 
 def cache_key(question: str, collection_id: str | None) -> str:
@@ -85,7 +88,10 @@ class LLMCache:
             CACHE_HITS.labels(kind="exact").inc()
             if collection_id:
                 await redis.zadd(LRU_PREFIX + str(collection_id), {key: time.time_ns()})
-            return _decode_payload(raw)
+            ans = _decode_payload(raw)
+            if ans is not None:
+                ans.hit_kind = "exact"
+            return ans
 
         if not collection_id:
             CACHE_MISSES.inc()
@@ -117,7 +123,11 @@ class LLMCache:
             if payload is not None:
                 CACHE_HITS.labels(kind="semantic").inc()
                 await redis.zadd(LRU_PREFIX + str(collection_id), {best_key: time.time_ns()})
-                return _decode_payload(payload)
+                ans = _decode_payload(payload)
+                if ans is not None:
+                    ans.hit_kind = "semantic"
+                    ans.hit_score = round(best_sim, 4)
+                return ans
 
         CACHE_MISSES.inc()
         return None

@@ -21,6 +21,8 @@ export interface CompletedVoiceTurn {
   queryId: string;
   intent: string | null;
   latencyMs: number | null;
+  cacheHit: boolean;
+  cacheHitKind: string | null;
 }
 
 export interface LiveVoiceTurn {
@@ -84,6 +86,8 @@ export function useVoice({ collectionId, conversationId, onTurnComplete }: UseVo
             queryId: ev.query_id,
             intent: ev.intent ?? null,
             latencyMs: ev.latency_ms ?? null,
+            cacheHit: ev.cache_hit ?? false,
+            cacheHitKind: ev.cache_hit_kind ?? null,
           });
           return null;
         });

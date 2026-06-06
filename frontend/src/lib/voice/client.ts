@@ -13,7 +13,7 @@ export type VoiceEvent =
   | { type: "ready"; sample_rate: number; frame_bytes: number; conversation_id: string }
   | { type: "transcript"; text: string }
   | { type: "agent_token"; delta: string }
-  | { type: "final"; query_id: string; intent: string; citations: VoiceCitationData[]; latency_ms: number; cache_hit?: boolean }
+  | { type: "final"; query_id: string; intent: string; citations: VoiceCitationData[]; latency_ms: number; cache_hit?: boolean; cache_hit_kind?: string | null }
   | { type: "cancelled"; reason?: string }
   | { type: "error"; message: string }
   | { type: "pong" };

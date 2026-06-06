@@ -12,6 +12,7 @@ export interface ChatMessage {
   intent?: string | null;
   toolsUsed?: string[];
   cacheHit?: boolean;
+  cacheHitKind?: string | null; // "exact" | "semantic"
   latencyMs?: number | null;
   streaming?: boolean;
   status?: string | null;
@@ -46,7 +47,11 @@ export function MessageBubble({ msg }: { msg: ChatMessage }) {
         {!msg.streaming && (msg.queryId || msg.intent) && (
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
             {msg.intent && <span className="chip">{msg.intent}</span>}
-            {msg.cacheHit && <span className="chip text-ok">cache hit</span>}
+            {msg.cacheHit && (
+              <span className="chip text-ok" title="Served from the LLM cache">
+                cache hit{msg.cacheHitKind ? ` · ${msg.cacheHitKind}` : ""}
+              </span>
+            )}
             {msg.toolsUsed?.map((t) => (
               <span key={t} className="chip">
                 {t}

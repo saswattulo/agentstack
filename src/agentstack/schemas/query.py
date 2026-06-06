@@ -29,6 +29,7 @@ class QueryResponse(BaseModel):
     intent: str | None = None
     tools_used: list[str] = Field(default_factory=list)
     cache_hit: bool = False
+    cache_hit_kind: str | None = None  # "exact" | "semantic" when cache_hit
     latency_ms: int | None = None
     model: str | None = None
 
