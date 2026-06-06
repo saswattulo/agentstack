@@ -62,9 +62,9 @@ export function Sidebar() {
         <Link href="/chat" className="text-base font-semibold text-fg no-underline">
           AgentStack
         </Link>
-        <Link href="/voice" className="chip no-underline" title="Voice agent">
-          🎙 voice
-        </Link>
+        <span className="chip" title="Use the mic button in a chat to talk">
+          🎙 voice in chat
+        </span>
       </div>
 
       <div className="px-3">

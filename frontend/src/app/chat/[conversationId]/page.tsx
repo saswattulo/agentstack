@@ -2,11 +2,12 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChatComposer } from "@/components/ChatComposer";
 import { ChatMessage, MessageBubble } from "@/components/MessageBubble";
 import { getConversation } from "@/lib/api";
 import { useStreamingQuery } from "@/hooks/useStreamingQuery";
+import { CompletedVoiceTurn, useVoice } from "@/hooks/useVoice";
 
 export default function ConversationPage() {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -20,6 +21,33 @@ export default function ConversationPage() {
   const conv = useQuery({
     queryKey: ["conversation", conversationId],
     queryFn: () => getConversation(conversationId),
+  });
+  const collectionId = conv.data?.collection_id;
+
+  // voice: a completed spoken turn becomes the same user+assistant bubbles as text
+  const onVoiceComplete = useCallback(
+    (turn: CompletedVoiceTurn) => {
+      setLive((l) => [
+        ...l,
+        { role: "user", content: turn.transcript },
+        {
+          role: "assistant",
+          content: turn.answer,
+          citations: turn.citations,
+          queryId: turn.queryId,
+          intent: turn.intent,
+          latencyMs: turn.latencyMs,
+        },
+      ]);
+      qc.invalidateQueries({ queryKey: ["conversations"] });
+    },
+    [qc],
+  );
+
+  const voice = useVoice({
+    collectionId,
+    conversationId,
+    onTurnComplete: onVoiceComplete,
   });
 
   // reset live layer when switching conversations
@@ -37,20 +65,18 @@ export default function ConversationPage() {
           content: m.answer,
           citations: m.citations,
           queryId: m.query_id,
-          // cacheHit unknown for history; hide eval badge re-poll noise by
-          // treating history answers as already-scored (queryId still set,
-          // EvalBadge will fetch existing result once).
         });
       }
     }
     return out;
   }, [conv.data]);
 
-  // assemble the full visible list: persisted history + live turns
+  // full visible list: history + committed live turns + whichever turn is in-flight
   const messages = useMemo(() => {
     const all = [...persisted, ...live];
+
+    // text in-flight (typed question)
     if (state.streaming || state.status || state.partialAnswer) {
-      // the in-flight assistant bubble (its paired user bubble is already in `live`)
       all.push({
         role: "assistant",
         content: state.partialAnswer,
@@ -59,20 +85,31 @@ export default function ConversationPage() {
         streaming: state.streaming,
       });
     }
+
+    // voice in-flight (spoken question): show the transcript + streaming answer
+    if (voice.liveTurn) {
+      all.push({ role: "user", content: voice.liveTurn.transcript });
+      all.push({
+        role: "assistant",
+        content: voice.liveTurn.partialAnswer,
+        citations: voice.liveTurn.citations,
+        status: voice.liveTurn.partialAnswer ? null : "thinking…",
+        streaming: true,
+      });
+    }
+
     return all;
-  }, [persisted, live, state]);
+  }, [persisted, live, state, voice.liveTurn]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages.length, state.partialAnswer]);
+  }, [messages.length, state.partialAnswer, voice.liveTurn?.partialAnswer]);
 
   async function onSend(text: string) {
-    const collectionId = conv.data?.collection_id;
     if (!collectionId) {
       alert("This conversation has no collection attached.");
       return;
     }
-    // optimistic user bubble
     setLive((l) => [...l, { role: "user", content: text }]);
 
     const final = await send({
@@ -82,8 +119,6 @@ export default function ConversationPage() {
     });
 
     if (final) {
-      // commit the completed assistant turn into the live layer, then clear
-      // the streaming state so the in-flight bubble doesn't duplicate it
       setLive((l) => [
         ...l,
         {
@@ -98,15 +133,21 @@ export default function ConversationPage() {
         },
       ]);
       reset();
-      // refresh the conversation list (updated_at ordering)
       qc.invalidateQueries({ queryKey: ["conversations"] });
     }
   }
 
+  const micActive = voice.recording || voice.phase === "connecting";
+
   return (
     <div className="flex h-screen flex-col">
-      <header className="border-b border-border bg-surface px-4 py-2">
+      <header className="flex items-center justify-between border-b border-border bg-surface px-4 py-2">
         <h2 className="truncate text-sm font-medium">{conv.data?.title ?? "…"}</h2>
+        {(voice.recording || voice.speaking || voice.phase !== "idle") && (
+          <span className="chip">
+            {voice.speaking ? "🔊 speaking" : voice.recording ? "🎙 listening" : voice.phase}
+          </span>
+        )}
       </header>
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
@@ -115,13 +156,20 @@ export default function ConversationPage() {
           {messages.map((m, i) => (
             <MessageBubble key={i} msg={m} />
           ))}
-          {state.error && (
-            <p className="text-sm text-danger">error: {state.error}</p>
+          {(state.error || voice.error) && (
+            <p className="text-sm text-danger">error: {state.error || voice.error}</p>
           )}
         </div>
       </div>
 
-      <ChatComposer onSend={onSend} disabled={state.streaming} />
+      <ChatComposer
+        onSend={onSend}
+        disabled={state.streaming}
+        recording={micActive}
+        speaking={voice.speaking}
+        onMicToggle={voice.recording ? voice.stopMic : voice.startMic}
+        onStopSpeaking={voice.stopSpeaking}
+      />
     </div>
   );
 }

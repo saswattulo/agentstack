@@ -236,8 +236,13 @@ async def voice_stream(ws: WebSocket) -> None:
                     payload = json.loads(msg["text"])
                 except json.JSONDecodeError:
                     continue
-                if payload.get("type") == "ping":
+                ctrl = payload.get("type")
+                if ctrl == "ping":
                     await _send_json(ws, {"type": "pong"})
+                elif ctrl == "interrupt":
+                    # Client Stop button / barge-in: cancel the in-flight turn so
+                    # the server stops generating more TTS, not just local audio.
+                    await _cancel_in_flight("client interrupt")
 
     except WebSocketDisconnect:
         pass

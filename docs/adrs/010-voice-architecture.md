@@ -105,3 +105,15 @@ The buffer also strips qwen3's `<think>...</think>` reasoning blocks before any 
 - We get a paid ElevenLabs key — their voice quality is markedly better, the API is straightforward, and we'd swap Piper for ElevenLabs in `core/voice/tts.py` (~30 lines).
 - Barge-in becomes a top user request — at that point the WS protocol needs an explicit "user interrupted" event and the audio queue gets a cancellation hook.
 - Voice sessions per user grow past 3-5 concurrent and we need the session cap that's currently deferred.
+
+## Addendum (Week 5b) — interruption + unified chat
+
+Two changes landed after the initial voice build:
+
+- **Voice folded into the chat thread.** Voice is no longer a separate page. The chat composer gained a mic button (`useVoice` hook wrapping `VoiceClient` + `AudioQueue`); spoken turns produce the same user+assistant bubbles as typed turns, in the same conversation. Only spoken turns are read aloud — typed questions stay silent (the existing `useStreamingQuery` text path is untouched). `/voice` now redirects to `/chat`.
+- **Authoritative Stop / interruption.** Server-side VAD barge-in is best-effort and proved unreliable (TTS sentences already buffered in the browser keep playing; VAD doesn't always trip over speaker bleed). The real fix is three layered cutoffs:
+  1. A **Stop button** in the composer (shown while audio is playing) that calls `AudioQueue.cancel()` — instant local silence.
+  2. That same action sends a `{type:"interrupt"}` WS control frame; the route calls the existing `_cancel_in_flight()` so the **server stops generating** further TTS, not just local playback.
+  3. The client also auto-interrupts when a new `transcript` event arrives, so starting to talk cuts off the previous answer even if the server's VAD missed it.
+
+  `AudioQueue` gained an `onPlayingChange` callback so the UI knows when audio is actually playing (to show Stop). Net effect: the agent always stops within a frame of the user clicking Stop or starting to speak, independent of whether VAD barge-in fired.

@@ -1,11 +1,19 @@
 // VoiceClient — manages the WebSocket to /api/v1/voice/stream, the mic
 // AudioWorklet, and an audio playback queue for the server-side TTS.
 
+export interface VoiceCitationData {
+  index: number;
+  preview: string;
+  score?: number;
+  chunk_id?: string;
+  document_id?: string | null;
+}
+
 export type VoiceEvent =
   | { type: "ready"; sample_rate: number; frame_bytes: number; conversation_id: string }
   | { type: "transcript"; text: string }
   | { type: "agent_token"; delta: string }
-  | { type: "final"; query_id: string; intent: string; citations: { index: number; preview: string }[]; latency_ms: number; cache_hit?: boolean }
+  | { type: "final"; query_id: string; intent: string; citations: VoiceCitationData[]; latency_ms: number; cache_hit?: boolean }
   | { type: "cancelled"; reason?: string }
   | { type: "error"; message: string }
   | { type: "pong" };
@@ -128,6 +136,13 @@ export class VoiceClient {
     }
   }
 
+  /** Tell the server to cancel the in-flight turn (stops further TTS). */
+  interrupt(): void {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({ type: "interrupt" }));
+    }
+  }
+
   close(): void {
     this.stopRecording();
     this.ws?.close();
@@ -142,6 +157,13 @@ export class AudioQueue {
   private q: ArrayBuffer[] = [];
   private currentSource: AudioBufferSourceNode | null = null;
 
+  /** Fired true when playback starts, false when it stops (drain end or cancel). */
+  onPlayingChange?: (playing: boolean) => void;
+
+  constructor(onPlayingChange?: (playing: boolean) => void) {
+    this.onPlayingChange = onPlayingChange;
+  }
+
   enqueue(wav: ArrayBuffer) {
     this.q.push(wav);
     if (!this.playing) void this.drain();
@@ -152,7 +174,7 @@ export class AudioQueue {
     this.q = [];
   }
 
-  /** Drop pending audio AND stop the current source — used for barge-in. */
+  /** Drop pending audio AND stop the current source — used for barge-in / Stop. */
   cancel() {
     this.q = [];
     if (this.currentSource) {
@@ -163,10 +185,15 @@ export class AudioQueue {
       }
       this.currentSource = null;
     }
+    if (this.playing) {
+      this.playing = false;
+      this.onPlayingChange?.(false);
+    }
   }
 
   private async drain() {
     this.playing = true;
+    this.onPlayingChange?.(true);
     if (!this.ctx) this.ctx = new AudioContext();
     while (this.q.length) {
       const wav = this.q.shift()!;
@@ -188,6 +215,9 @@ export class AudioQueue {
         console.error("audio decode failed", e);
       }
     }
-    this.playing = false;
+    if (this.playing) {
+      this.playing = false;
+      this.onPlayingChange?.(false);
+    }
   }
 }

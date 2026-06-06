@@ -108,8 +108,8 @@ src/agentstack/
 | 4 | Voice agent — Piper TTS in-process | ✅ Real (model auto-downloads; see ADR-010) |
 | 4 | Voice agent — silero VAD + UtteranceSegmenter | ✅ Real |
 | 4 | Voice agent — `/api/v1/voice/stream` WebSocket | ✅ Real (JWT in first frame) |
-| 4 | Voice UI — Next.js `/voice` page + AudioWorklet | ✅ Real |
-| 4 | Voice barge-in / interruption | ✅ Real (cancel in-flight turn on user speech) |
+| 4 | Voice UI — mic button in chat thread + AudioWorklet | ✅ Real (`/voice` redirects to `/chat`; see ADR-010 addendum) |
+| 4 | Voice barge-in / interruption | ✅ Real (manual Stop + `interrupt` WS frame + auto-stop on new utterance) |
 | 4 | Per-user concurrent voice session cap | 🟡 Stub (Week 6) |
 | 4 | CI workflow | ✅ Real |
 | 4 | Load test (locust) | 🟡 Stub |
