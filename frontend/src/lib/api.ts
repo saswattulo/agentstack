@@ -235,21 +235,19 @@ export async function ingestFile(collectionId: string, file: File) {
 
 export interface EvalResult {
   query_id: string;
-  faithfulness: number | null;
-  answer_relevancy: number | null;
-  context_precision: number | null;
-  context_recall: number | null;
-  citation_accuracy: number | null;
-  extra: Record<string, unknown>;
+  status: "pending" | "ready";
+  faithfulness?: number | null;
+  answer_relevancy?: number | null;
+  context_precision?: number | null;
+  context_recall?: number | null;
+  citation_accuracy?: number | null;
+  extra?: Record<string, unknown>;
 }
 
-export async function getEvalResult(queryId: string): Promise<EvalResult | null> {
-  const res = await fetch(`${BASE}/api/v1/eval/results/${queryId}`, {
-    headers: { ...authHeaders() },
-  });
-  if (res.status === 404) return null; // eval not finished yet
-  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
-  return (await res.json()) as EvalResult;
+// Returns {status: "pending"} while the async eval is still running (200, not
+// 404 — so the browser console stays clean during polling).
+export async function getEvalResult(queryId: string): Promise<EvalResult> {
+  return request<EvalResult>(`/api/v1/eval/results/${queryId}`);
 }
 
 // ---- api keys ----

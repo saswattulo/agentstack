@@ -28,15 +28,23 @@ async def _get_owned_query_log(
 async def get_eval_result(
     query_id: UUID, current: CurrentUserDep, db: DbSession
 ) -> dict:
+    """Return the eval scores for a query.
+
+    Eval runs asynchronously on the worker, so a result may not exist yet.
+    That's a normal transient state, not an error — we return 200 with
+    `status: "pending"` so polling clients don't spam 404s. A genuinely
+    unknown/unauthorized query_id still 404s via _get_owned_query_log.
+    """
     await _get_owned_query_log(db, query_id, current.id)
     result = await db.execute(
         select(EvalResult).where(EvalResult.query_log_id == query_id)
     )
     eval_row = result.scalar_one_or_none()
     if eval_row is None:
-        raise NotFoundError("No eval result for this query")
+        return {"query_id": str(query_id), "status": "pending"}
     return {
         "query_id": str(query_id),
+        "status": "ready",
         "faithfulness": eval_row.faithfulness,
         "answer_relevancy": eval_row.answer_relevancy,
         "context_precision": eval_row.context_precision,
