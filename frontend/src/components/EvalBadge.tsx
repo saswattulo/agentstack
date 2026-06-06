@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getEvalResult } from "@/lib/api";
 
@@ -24,10 +25,14 @@ function Bar({ label, value }: { label: string; value: number | null | undefined
 const MAX_POLLS = 20; // ~80s; eval normally lands in 20-40s
 
 export function EvalBadge({ queryId }: { queryId: string }) {
+  // Collapsed by default — eval is opt-in. We only fetch once the user opens
+  // it (enabled: open), so closed answers make zero eval requests.
+  const [open, setOpen] = useState(false);
+
   const q = useQuery({
     queryKey: ["eval", queryId],
     queryFn: () => getEvalResult(queryId),
-    // poll every 4s while pending; stop once ready or after MAX_POLLS attempts
+    enabled: open,
     refetchInterval: (query) => {
       if (query.state.data?.status === "ready") return false;
       if ((query.state.dataUpdateCount ?? 0) >= MAX_POLLS) return false;
@@ -36,15 +41,29 @@ export function EvalBadge({ queryId }: { queryId: string }) {
     staleTime: Infinity,
   });
 
-  if (q.data?.status !== "ready") {
-    return <span className="text-[10px] text-muted">scoring…</span>;
-  }
+  const ready = q.data?.status === "ready";
 
   return (
-    <div className="mt-2 grid gap-1 rounded-md border border-border bg-surface p-2">
-      <Bar label="faithful" value={q.data.faithfulness} />
-      <Bar label="relevancy" value={q.data.answer_relevancy} />
-      <Bar label="citations" value={q.data.citation_accuracy} />
+    <div className="mt-1">
+      <button
+        className="flex items-center gap-1 text-[10px] text-muted hover:text-fg"
+        onClick={() => setOpen((o) => !o)}
+        title="RAGAS eval scores for this answer"
+      >
+        <span className="inline-block w-2 text-center">{open ? "▾" : "▸"}</span>
+        eval scores
+      </button>
+
+      {open &&
+        (ready ? (
+          <div className="mt-1 grid gap-1 rounded-md border border-border bg-surface p-2">
+            <Bar label="faithful" value={q.data?.faithfulness} />
+            <Bar label="relevancy" value={q.data?.answer_relevancy} />
+            <Bar label="citations" value={q.data?.citation_accuracy} />
+          </div>
+        ) : (
+          <span className="ml-3 text-[10px] text-muted">scoring…</span>
+        ))}
     </div>
   );
 }
