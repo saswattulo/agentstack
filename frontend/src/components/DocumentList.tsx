@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { TrashIcon } from "@/components/icons";
 import { DocumentRead, deleteDocument, listDocuments } from "@/lib/api";
 
 const PENDING_STATES = new Set([
@@ -76,11 +77,13 @@ function DocRow({ doc, onDelete }: { doc: DocumentRead; onDelete: () => void }) 
         )}
       </div>
       <button
-        className="btn-danger btn px-2 py-1 text-xs"
+        className="btn-danger btn px-2 py-1.5 text-xs"
         onClick={() => {
           if (confirm(`Delete ${doc.filename ?? "this document"}?`)) onDelete();
         }}
+        title="Delete document"
       >
+        <TrashIcon className="h-3.5 w-3.5" />
         Delete
       </button>
     </div>

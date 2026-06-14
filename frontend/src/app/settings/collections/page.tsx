@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { DocumentList } from "@/components/DocumentList";
 import { DocumentUpload } from "@/components/DocumentUpload";
+import { ChevronDownIcon, ChevronRightIcon, PlusIcon, TrashIcon } from "@/components/icons";
 import {
   Collection,
   createCollection,
@@ -30,10 +31,16 @@ export default function CollectionsPage() {
 
   return (
     <div className="mx-auto max-w-3xl p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Collections</h1>
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Collections</h1>
+          <p className="mt-0.5 text-sm text-muted">
+            Group your documents into searchable, per-collection knowledge bases.
+          </p>
+        </div>
         <button className="btn btn-primary" onClick={() => setCreating(true)}>
-          + New collection
+          <PlusIcon className="h-4 w-4" />
+          New collection
         </button>
       </div>
 
@@ -54,7 +61,7 @@ export default function CollectionsPage() {
         {items.map((c) => (
           <div key={c.id} className="card overflow-hidden">
             <button
-              className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-surface-2"
+              className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-surface-2"
               onClick={() => setSelected(selected === c.id ? null : c.id)}
             >
               <span>
@@ -64,7 +71,11 @@ export default function CollectionsPage() {
                 )}
                 <span className="ml-2 text-xs text-muted">· {c.chunking_strategy}</span>
               </span>
-              <span className="text-muted">{selected === c.id ? "▾" : "▸"}</span>
+              {selected === c.id ? (
+                <ChevronDownIcon className="h-4 w-4 shrink-0 text-muted" />
+              ) : (
+                <ChevronRightIcon className="h-4 w-4 shrink-0 text-muted" />
+              )}
             </button>
 
             {selected === c.id && (
@@ -85,6 +96,7 @@ export default function CollectionsPage() {
                         remove.mutate(c.id);
                     }}
                   >
+                    <TrashIcon className="h-4 w-4" />
                     Delete collection
                   </button>
                 </div>

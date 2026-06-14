@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { PlusIcon } from "@/components/icons";
 import {
   ApiKeyCreated,
   createApiKey,
@@ -32,8 +33,8 @@ export default function ApiKeysPage() {
 
   return (
     <div className="mx-auto max-w-3xl p-6">
-      <h1 className="mb-1 text-xl font-semibold">API keys</h1>
-      <p className="mb-4 text-sm text-muted">
+      <h1 className="mb-1 text-xl font-semibold tracking-tight">API keys</h1>
+      <p className="mb-5 text-sm text-muted">
         Machine credentials for scripts and CI. Send as{" "}
         <code>X-API-Key: &lt;key&gt;</code>. Keys inherit your data scope.
       </p>
@@ -54,6 +55,7 @@ export default function ApiKeysPage() {
           disabled={create.isPending}
           onClick={() => create.mutate()}
         >
+          <PlusIcon className="h-4 w-4" />
           Create key
         </button>
       </div>

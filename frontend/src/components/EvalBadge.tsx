@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getEvalResult } from "@/lib/api";
+import { ChevronDownIcon, ChevronRightIcon } from "./icons";
 
 function Bar({ label, value }: { label: string; value: number | null | undefined }) {
   const has = value != null;
@@ -46,11 +47,15 @@ export function EvalBadge({ queryId }: { queryId: string }) {
   return (
     <div className="mt-1">
       <button
-        className="flex items-center gap-1 text-[10px] text-muted hover:text-fg"
+        className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-muted transition-colors hover:text-fg"
         onClick={() => setOpen((o) => !o)}
         title="RAGAS eval scores for this answer"
       >
-        <span className="inline-block w-2 text-center">{open ? "▾" : "▸"}</span>
+        {open ? (
+          <ChevronDownIcon className="h-3 w-3" />
+        ) : (
+          <ChevronRightIcon className="h-3 w-3" />
+        )}
         eval scores
       </button>
 

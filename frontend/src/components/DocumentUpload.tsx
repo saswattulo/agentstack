@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
+import { UploadIcon } from "@/components/icons";
 import { ingestFile } from "@/lib/api";
 
 const ACCEPT = ".pdf,.md,.markdown,.txt";
@@ -27,8 +28,8 @@ export function DocumentUpload({ collectionId }: { collectionId: string }) {
   return (
     <div>
       <div
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center text-sm transition-colors ${
-          dragging ? "border-accent bg-accent/5" : "border-border bg-surface"
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-7 text-center text-sm transition-colors ${
+          dragging ? "border-accent bg-accent/10" : "border-border bg-surface hover:border-border/80 hover:bg-surface-2/50"
         }`}
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => {
@@ -42,7 +43,8 @@ export function DocumentUpload({ collectionId }: { collectionId: string }) {
           handleFiles(e.dataTransfer.files);
         }}
       >
-        <span className="text-muted">
+        <UploadIcon className={`mb-2 h-6 w-6 ${dragging ? "text-accent" : "text-muted"}`} />
+        <span className="font-medium text-fg">
           {upload.isPending ? "Uploading…" : "Drop a file here or click to upload"}
         </span>
         <span className="mt-1 text-xs text-muted">PDF, Markdown, or plain text</span>

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
+import { LogoIcon } from "@/components/icons";
 
 export default function LoginPage() {
   const { user, loading, login, register } = useAuth();
@@ -35,11 +36,23 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
-      <div className="card w-full max-w-sm p-6">
-        <h1 className="mb-1 text-xl font-semibold">AgentStack</h1>
-        <p className="mb-5 text-sm text-muted">
-          {mode === "login" ? "Sign in to your account" : "Create a new account"}
-        </p>
+      <div className="card w-full max-w-sm p-7 shadow-lg">
+        <div className="mb-5">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-accent/30 bg-accent/10">
+              <LogoIcon className="h-5 w-5 text-accent" />
+            </span>
+            <span className="text-lg font-semibold tracking-tight">AgentStack</span>
+          </div>
+          <h1 className="text-base font-semibold">
+            {mode === "login" ? "Welcome back" : "Create your account"}
+          </h1>
+          <p className="mt-0.5 text-sm text-muted">
+            {mode === "login"
+              ? "Sign in to your account to continue."
+              : "Get started with your own RAG workspace."}
+          </p>
+        </div>
 
         <form onSubmit={submit} className="grid gap-3">
           {mode === "register" && (

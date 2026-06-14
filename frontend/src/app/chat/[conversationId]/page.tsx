@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChatComposer } from "@/components/ChatComposer";
+import { VolumeIcon } from "@/components/icons";
 import { ChatMessage, MessageBubble } from "@/components/MessageBubble";
 import { getConversation } from "@/lib/api";
 import { useStreamingQuery } from "@/hooks/useStreamingQuery";
@@ -144,11 +145,25 @@ export default function ConversationPage() {
 
   return (
     <div className="flex h-screen flex-col">
-      <header className="flex items-center justify-between border-b border-border bg-surface px-4 py-2">
-        <h2 className="truncate text-sm font-medium">{conv.data?.title ?? "…"}</h2>
+      <header className="flex items-center justify-between border-b border-border bg-surface/80 px-4 py-2.5 backdrop-blur">
+        <h2 className="truncate text-sm font-semibold tracking-tight">
+          {conv.data?.title ?? "…"}
+        </h2>
         {(voice.recording || voice.speaking || voice.phase !== "idle") && (
           <span className="chip">
-            {voice.speaking ? "🔊 speaking" : voice.recording ? "🎙 listening" : voice.phase}
+            {voice.speaking ? (
+              <>
+                <VolumeIcon className="h-3 w-3 text-accent" />
+                speaking
+              </>
+            ) : voice.recording ? (
+              <>
+                <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-danger" />
+                listening
+              </>
+            ) : (
+              voice.phase
+            )}
           </span>
         )}
       </header>

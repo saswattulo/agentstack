@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MicIcon, SendIcon, StopIcon } from "@/components/icons";
 
 export function ChatComposer({
   onSend,
@@ -27,27 +28,24 @@ export function ChatComposer({
   }
 
   return (
-    <div className="border-t border-border bg-surface p-3">
+    <div className="border-t border-border bg-surface/80 p-3 backdrop-blur">
       <div className="mx-auto flex max-w-3xl items-end gap-2">
         {onMicToggle && (
           <button
-            className={`btn shrink-0 ${recording ? "border-danger/60 text-danger" : ""}`}
+            className={`btn shrink-0 ${recording ? "border-danger/50 bg-danger/10 text-danger" : ""}`}
             onClick={onMicToggle}
             title={recording ? "Stop microphone" : "Start talking"}
           >
             {recording ? (
-              <span className="flex items-center gap-1">
-                <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-danger" />
-                Mic
-              </span>
+              <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-danger" />
             ) : (
-              "🎙"
+              <MicIcon className="h-4 w-4" />
             )}
           </button>
         )}
 
         <textarea
-          className="input max-h-40 min-h-[2.5rem] flex-1 resize-none"
+          className="input max-h-40 min-h-[2.75rem] flex-1 resize-none py-2.5"
           rows={1}
           placeholder={
             recording
@@ -66,10 +64,16 @@ export function ChatComposer({
 
         {speaking && onStopSpeaking ? (
           <button className="btn btn-danger shrink-0" onClick={onStopSpeaking} title="Stop the agent">
-            ⏹ Stop
+            <StopIcon className="h-4 w-4" />
+            Stop
           </button>
         ) : (
-          <button className="btn btn-primary shrink-0" disabled={disabled || !text.trim()} onClick={submit}>
+          <button
+            className="btn btn-primary shrink-0"
+            disabled={disabled || !text.trim()}
+            onClick={submit}
+          >
+            <SendIcon className="h-4 w-4" />
             Send
           </button>
         )}
