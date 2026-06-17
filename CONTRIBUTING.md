@@ -5,7 +5,7 @@ Thanks for the interest. AgentStack is a portfolio project, but it's structured 
 ## Setup
 
 ```bash
-git clone https://github.com/<you>/agentstack.git
+git clone https://github.com/saswattulo/agentstack.git
 cd agentstack
 cp .env.example .env
 # Set GROQ_API_KEY and TAVILY_API_KEY before running the agent path.
