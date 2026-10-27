@@ -99,7 +99,7 @@ async def test_query_writes_eval_row(tmp_path):
                 resp = await client.get(
                     f"/api/v1/eval/results/{query_id}", headers=headers
                 )
-                if resp.status_code == 200:
+                if resp.status_code == 200 and resp.json().get("status") == "ready":
                     eval_row = resp.json()
                     break
                 await asyncio.sleep(1)

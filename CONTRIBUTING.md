@@ -14,14 +14,18 @@ make install
 uv run pre-commit install
 make up
 make migrate
+
+cd frontend && npm install && npm run dev   # optional: UI on :3000
 ```
 
 ## Workflow
 
 1. Open an issue first for anything non-trivial — a one-liner outlining motivation + approach is enough.
 2. Branch from `main`. Keep PRs scoped to a single concern.
-3. `make lint && make typecheck && make test` must pass locally before opening the PR.
-4. PRs land on `main` after one approving review + green CI.
+3. `make lint && make typecheck && make test` must pass locally before opening the PR. With the stack up (`make up`), `make test` also runs the integration suite; otherwise those tests skip.
+   For frontend changes, also run `npm run typecheck && npm run build` in `frontend/`.
+4. Changes to retrieval, prompts, caching or eval must re-run the benchmarks (`docs/benchmarks.md#reproduce`) and put the before/after numbers in the PR. A change that moves Hit@1 or faithfulness by less than ~6 points on the 35-question set is noise, not a result.
+5. PRs land on `main` after one approving review + green CI.
 
 ## Code style
 
@@ -36,7 +40,7 @@ See [CLAUDE.md](CLAUDE.md) for the full conventions used by the AI-assisted work
 
 ## Adding an ADR
 
-Decisions worth recording: schema changes, library swaps, retrieval strategy changes, prompt format changes. Use the template:
+Decisions worth recording: schema changes, library swaps, retrieval strategy changes, prompt format changes, model changes. Number sequentially (next: 013). To amend an accepted ADR, append a dated `## Addendum` instead of rewriting history. Use the template:
 
 ```markdown
 # ADR NNN — Short title
