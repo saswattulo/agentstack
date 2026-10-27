@@ -10,7 +10,11 @@ from dataclasses import asdict, is_dataclass
 from typing import Any, TypedDict
 
 from agentstack.config import settings
-from agentstack.core.agent.citations import build_context_block, extract_citations
+from agentstack.core.agent.citations import (
+    build_context_block,
+    extract_citations,
+    normalize_citation_markers,
+)
 from agentstack.core.agent.prompts import ROUTER_V1, SYNTHESIZER_V1
 from agentstack.core.agent.tools import web_search as run_web_search
 from agentstack.core.retrieval.hybrid import HybridRetriever, RetrievedChunk
@@ -170,13 +174,13 @@ async def synthesize_node(state: AgentState) -> AgentState:
 
         client = get_chat_client()
         resp = await client.complete(messages=messages, temperature=0.2, max_tokens=800)
-        answer = _extract_text(resp).strip()
+        answer = normalize_citation_markers(_extract_text(resp).strip())
         set_attrs(span, **{OUTPUT_VALUE: truncate(answer)})
 
     state["answer"] = answer
     citations = extract_citations(answer, chunks)
     state["citations"] = [c.model_dump(mode="json") for c in citations]
-    state["model"] = client.model
+    state["model"] = resp.get("model") or client.model
 
     _record_tokens(resp, kind="synthesize")
     state["prompt_tokens"] = state.get("prompt_tokens", 0) + _get(resp, "prompt_tokens")

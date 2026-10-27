@@ -1,6 +1,6 @@
 # ADR 004 — Caching: exact + semantic two-level
 
-- **Status:** Accepted (interface) / Pending implementation (Week 3)
+- **Status:** Accepted — implemented in Week 3; storage layout and invalidation refined by ADR-009
 - **Date:** 2026-05-30
 
 ## Context

@@ -4,108 +4,108 @@
 
 AgentStack is a self-hosted, production-style RAG platform. It must:
 
-1. Ingest heterogeneous documents asynchronously and report per-document progress.
-2. Answer questions through an agentic pipeline that can choose between corpus retrieval, web search, and (optionally) code execution.
-3. Cite every claim to a source chunk.
-4. Be observable end-to-end: every retrieval and LLM call must produce a trace.
-5. Be evaluable: every answer should be scoreable, with metrics persisted for trend analysis.
-6. Run on one developer laptop in under one command (`make up`).
+1. Serve many users with strict isolation. Every resource has one owner.
+2. Ingest documents asynchronously and report per-document progress.
+3. Answer through an agent that chooses between corpus retrieval, web search and (stubbed) code execution, and cite every claim.
+4. Degrade, not fail, when the LLM provider throttles or retires a model.
+5. Be observable end to end (traces, metrics, structured logs) and evaluable (every fresh answer is scored and persisted).
+6. Run on one laptop with `make up`.
 
 ## System diagram
 
 ```
-┌──────────────┐      ┌────────────────────────────────────────────┐
-│   Frontend    │─────▶│  FastAPI Gateway                           │
-│   (Next.js)   │◀─────│  • RequestID, API-key auth, rate limit     │
-└──────────────┘      │  • Pydantic v2 validation                  │
-                      │  • Custom error taxonomy                   │
-                      └────────────┬────────────┬──────────────────┘
-                                   │            │
-                  ┌────────────────▼┐    ┌──────▼──────────────────┐
-                  │ POST /ingest     │    │ POST /query             │
-                  │ + /collections   │    │  + /query/stream        │
-                  └────────┬─────────┘    └──────┬──────────────────┘
-                           │                     │
-                  ┌────────▼─────────┐    ┌──────▼──────────────────┐
-                  │ Celery worker    │    │ services.query_service  │
-                  │  parse → chunk   │    │  → cache lookup         │
-                  │  → embed → upsert│    │  → LangGraph agent      │
-                  └────────┬─────────┘    │     • router            │
-                           │              │     • hybrid retrieval  │
-                  ┌────────▼─────────┐    │     • web search        │
-                  │  Qdrant          │◀───│     • synthesis + cite  │
-                  │  vector store    │    │     • reflect           │
-                  └──────────────────┘    │  → eval enqueue         │
-                                          └──────┬──────────────────┘
-                  ┌──────────────────┐           │
-                  │  PostgreSQL      │◀──────────┤
-                  │  metadata · logs │           │
-                  │  eval results    │   ┌───────▼─────────┐
-                  └──────────────────┘   │ Eval runner      │
-                                         │ RAGAS + citation │
-                  ┌──────────────────┐   │ accuracy         │
-                  │  Redis           │   └──────────────────┘
-                  │  cache · queue   │
-                  │  rate limit      │
-                  └──────────────────┘
-                                          ┌──────────────────────────┐
-                                          │ Observability             │
-                                          │  Phoenix (LLM traces)     │
-                                          │  Prometheus + Grafana     │
-                                          └──────────────────────────┘
+┌───────────────┐  HTTP / SSE / WS   ┌───────────────────────────────────────────────┐
+│  Next.js UI    │──────────────────▶│ FastAPI                                        │
+│  (React Query) │◀──────────────────│  CORS → RequestID → Auth (JWT | X-API-Key)     │
+└───────────────┘                    │       → RateLimit (sliding window, Redis)      │
+                                     └──┬───────────────┬────────────────────┬────────┘
+                                        │               │                    │
+                           ┌────────────▼───┐  ┌────────▼────────────┐  ┌────▼─────────────┐
+                           │ /ingest         │  │ /query, /query/stream│  │ /voice/stream WS │
+                           │ /collections    │  │ services.query_service│  │ VAD → Whisper    │
+                           │ /documents      │  └────────┬────────────┘  │ → stream_query   │
+                           └────────┬───────┘           │                │ → Piper TTS      │
+                                    │          ┌────────▼─────────┐      └──────────────────┘
+                           ┌────────▼───────┐  │ LLM cache (Redis) │
+                           │ Celery worker   │  │ exact → semantic  │──hit──▶ answer
+                           │ parse · chunk   │  └────────┬─────────┘
+                           │ embed · upsert  │           │ miss
+                           │ cache invalidate│  ┌────────▼──────────────────────────────┐
+                           │ eval judge      │  │ LangGraph                              │
+                           └──┬──────────┬──┘  │ router ─┬─ retrieve ─(empty)─┐         │
+                              │          │     │         ├─ web_search ◀──────┘         │
+                       ┌──────▼───┐ ┌────▼───┐ │         └─ code_exec (stub)            │
+                       │ Qdrant    │ │Postgres│ │ → synthesize [n] → reflect (no-op)     │
+                       │ col_<uuid>│ │        │ └────────┬──────────────────────────────┘
+                       └──────────┘ └────────┘          │
+                                                ┌────────▼─────────────────────────┐
+                                                │ FallbackChatClient                │
+                                                │ Groq primary ─429/404/5xx─▶ fallback │
+                                                └──────────────────────────────────┘
+        Observability: Phoenix (OTel spans, OpenInference keys) · Prometheus + Grafana · structlog
 ```
 
-## Request flow — ingestion
+## Request flow: ingestion
 
-1. `POST /api/v1/collections/{id}/ingest` accepts a multipart upload.
-2. The file is streamed to `/tmp/agentstack/uploads/<uuid>__<filename>` with a max-size guard.
-3. A `Document` row is created with `status=PENDING`.
-4. The endpoint enqueues `agentstack.workers.tasks.ingest_document_task` on the `ingest` queue.
-5. The Celery worker runs `parse → chunk → embed → upsert → ChunkMetadata insert`, updating `Document.status` and `Document.progress` after each stage.
-6. On completion, the temporary upload is deleted; chunks live in Qdrant + `chunk_metadata` in Postgres.
+1. `POST /api/v1/collections/{id}/ingest` (multipart) or `/ingest-url`. The route checks the collection belongs to the caller.
+2. The upload is streamed to disk with a size guard, a `Document` row is created as `PENDING`, and `ingest_document_task` is enqueued.
+3. The worker parses (pypdf / text / BeautifulSoup for URLs), chunks with the collection's strategy (`recursive` default, `semantic` optional; ADR-002), embeds with `bge-small-en-v1.5` (384-d) and upserts into Qdrant. It writes `chunk_metadata` rows (point id + 240-char preview) to Postgres and updates `Document.status` / `progress` per stage.
+4. On completion the worker calls `invalidate_collection_sync()`, so cached answers can't outlive the corpus they came from (ADR-009).
 
-Failure modes:
-- Parser exception → retry once, then `status=FAILED` with `error_message`.
-- Embedder OOM → terminate worker; Celery requeue on restart (acks-late + prefetch-1).
-- Qdrant unavailable → retry with exponential backoff (Celery built-in).
+## Request flow: query
 
-## Request flow — query (target shape; Week 2 implements)
-
-1. `POST /api/v1/query` validates the request and authenticates via API key.
-2. `services.query_service` checks the LLM cache (exact + semantic).
-3. On miss, the LangGraph state machine runs:
+1. `POST /api/v1/query` (JSON) or `/query/stream` (SSE over POST). The route verifies collection ownership and resolves an optional conversation owned by the caller.
+2. `query_service` checks the LLM cache: exact key `sha256(question + collection)`, then cosine ≥ 0.95 against the collection's vector index. A hit returns at once with `cache_hit_kind`, and no eval is enqueued.
+3. On a miss the LangGraph agent runs:
    - **Router** classifies intent (factual / analytical / comparison / web / code / conversational).
-   - **Retrieve** runs hybrid search (dense via Qdrant + BM25), then cross-encoder reranking.
-   - If retrieval is empty or confidence is low → **Web search** node calls Tavily.
-   - **Synthesize** prompts the LLM with retrieved context, instructing inline `[n]` citations.
-   - **Reflect** checks for unsupported claims; on low confidence, loops back.
-4. The answer + citations are returned. A `QueryLog` row is written synchronously.
-5. An eval task is enqueued (fire-and-forget) which populates an `EvalResult` row.
+   - **Retrieve**: dense (Qdrant, oversample ×4) + BM25 over chunk previews, fused with RRF (`k=60`). The optional cross-encoder rerank (`RERANKER_ENABLED`) reorders the fused top-k (ADR-007).
+   - Empty retrieval with web search allowed → **Tavily**.
+   - **Synthesize** builds a numbered context block and prompts for `[n]` citations. The last 5 Q&A turns of the conversation are injected. Citation markers are normalized (`【n】` → `[n]`) before extraction.
+   - **Reflect** is currently a pass-through.
+4. All LLM calls go through `infra.llm.get_chat_client()`, a `FallbackChatClient` (ADR-005 addendum). The primary runs without SDK retries; 429 / 404 / 5xx / connection errors reroute to the fallback model. Streams only fall back before the first token. If both models fail the API returns 503.
+5. A `QueryLog` row is written, the answer is cached (except for conversational intents) and `eval_query_task` is enqueued.
+6. **Eval** (worker, ADR-012): faithfulness is LLM claim extraction plus verdicts against the cited chunks' **full text** from Qdrant. Answer relevancy is the cosine between the question and questions regenerated from the answer. Citation accuracy matches each `[n]` against the chunk it points to. The result goes to `eval_results`, readable via `GET /api/v1/eval/results/{query_id}` (`pending` until ready).
+
+## Request flow: voice
+
+One WebSocket per session (`/api/v1/voice/stream`); the JWT arrives in the first frame (ADR-010). The browser sends 16 kHz Int16 PCM frames. silero VAD segments utterances (800 ms silence), Groq Whisper transcribes, and the same `stream_query` path answers. Sentences are synthesized with Piper as they complete and sent back as WAV. An `interrupt` control frame, or a new transcript, cancels the in-flight turn.
+
+## Tenancy and auth
+
+- `users` (Argon2id passwords) · `api_keys` (SHA-256 hash only, bound to a user) · stateless HS256 JWT, 24 h.
+- `AuthMiddleware` resolves either credential to `request.state.user_id`; routes use `CurrentUserDep`.
+- Every query filters on `owner_id == current.id` or joins through an owned parent. Foreign resources return 404, not 403, so they can't be enumerated.
+- Rate limit: 60 req/min per user (sliding-window log in Redis). Admins bypass it.
 
 ## Storage layout
 
-- **Postgres** holds relational state: collections, documents, chunk metadata, API keys, query logs, eval results.
-- **Qdrant** holds vectors + payloads. One collection per AgentStack collection (`col_<uuid>`). Vector dim is locked to the collection's embedder at creation time.
-- **Redis** is a single instance with separate DB indices: `0` for cache + rate limits, `1` for Celery broker, `2` for Celery results.
-- **Phoenix** stores traces locally in a Docker volume.
+- **Postgres:** users, api_keys, collections, documents, chunk_metadata, conversations, query_logs, eval_results. `query_logs` FKs are `ON DELETE SET NULL`, so audit rows outlive deleted collections.
+- **Qdrant:** one collection per AgentStack collection (`col_<uuid>`), payload carries full chunk text plus `document_id`.
+- **Redis:** DB 0 for cache + rate limits, DB 1 for the Celery broker, DB 2 for Celery results.
+- **Volumes:** Phoenix traces, Piper voice model (`/models/piper`), Hugging Face model cache.
 
 ## Boundary contracts
 
-- Routes never construct DB engines / Redis clients / Qdrant clients ad hoc. They go through `infra/`.
-- Feature code never imports `groq.AsyncGroq` directly. It goes through `infra.llm.get_chat_client()`.
-- Prompts live in `core/agent/prompts.py`. They are versioned. New variants are new objects, not in-place edits.
-- Tools (`core/agent/tools.py`) expose a JSON schema for the LLM and a Python callable. The agent picks the callable via `TOOL_REGISTRY`.
+- Routes and services never build DB / Redis / Qdrant / LLM clients ad hoc; everything goes through `infra/`.
+- Feature code never imports `groq.AsyncGroq`; provider exceptions are translated in `infra.llm` (`LLMUnavailableError`).
+- Prompts are versioned objects in `core/agent/prompts.py`.
+- Heavy models are process singletons: `get_embedder()`, `get_reranker()`.
 
 ## Observability
 
-- HTTP-layer metrics come from `prometheus-fastapi-instrumentator`.
-- Domain metrics are defined in `infra/metrics.py` and incremented at known seams (ingestion stages, retrieval, eval).
-- Tracing is wired in `infra/tracing.py`; Phoenix is the default collector. Switching to Jaeger only requires changing `PHOENIX_COLLECTOR_ENDPOINT` (OTLP-compatible).
-- Logs are structured (structlog). In dev they're colorized; in prod they emit JSON.
+- **Traces:** manual OTel spans with OpenInference keys: `query` → `agent.router` / `agent.retrieve` (`retrieval.hybrid`) / `agent.synthesize` (`llm.complete`), plus `asr.whisper` and `tts.piper`. The worker is not traced (ADR-008).
+- **Metrics:** HTTP via `prometheus-fastapi-instrumentator`. Domain metrics in `infra/metrics.py`: ingestion, query latency, LLM tokens, `agentstack_llm_fallbacks_total`, cache hits/misses, retrieval sizes, eval gauges. Worker-side gauges live in the worker's own registry and don't appear on the API's `/metrics`.
+- **Logs:** structlog, JSON in prod.
+
+## Known limits
+
+- One uvicorn process per API container. It saturates around 70 req/s (see `docs/benchmarks.md`). Each extra worker loads its own models, about 1.5 GB each.
+- BM25 indexes the 240-char previews, not full chunks, and lives in a per-process cache.
+- Same-model LLM judging; Groq's per-model token quotas can leave eval scores null under load.
+- Images ship CUDA builds of torch even though everything runs on CPU.
 
 ## Non-goals (for now)
 
-- Multi-tenant isolation beyond per-API-key rate limits.
-- Live Kubernetes deployment.
-- Real sandboxed code execution (the code-exec tool is stubbed).
-- A fine-tuned reranker (stretch).
+- Kubernetes or any hosted deployment.
+- Real sandboxed code execution.
+- Workspaces / sharing between users, OAuth, refresh tokens.

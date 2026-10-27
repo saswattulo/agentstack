@@ -1,7 +1,7 @@
 # CLAUDE.md — Working Notes for AgentStack
 
 This file is loaded into Claude Code's context for every session in this repo. Keep it small, current, and load-bearing.
-
+   
 ## What this project is
 
 Multi-agent, **multi-user** RAG platform. Users register, upload documents into per-user collections → query through a LangGraph agent that routes between retrieval, web search, code execution, and synthesis → cited answers with eval + observability. Chat lives in conversation threads owned by the user.
@@ -17,17 +17,18 @@ Built as a portfolio project. The interview signal comes from production pattern
 | API | FastAPI + Pydantic v2 | Async everywhere. |
 | DB | Postgres 16 + SQLAlchemy 2 async + Alembic | `asyncpg` for the API, `psycopg` for the Celery worker. |
 | Cache + queue | Redis 7 | Single Redis, separate DB indices: cache/rate-limit, Celery broker, Celery results. |
-| Vector store | Qdrant | Hybrid (dense + sparse) ready. Do NOT swap to Chroma. |
+| Vector store | Qdrant | Dense vectors only; the sparse side is in-process BM25 (ADR-007). Do NOT swap to Chroma. |
 | Task queue | Celery 5 | Async ingestion + background eval. |
-| LLM | **Groq only** | Default model `qwen/qwen3-32b`, fallback `llama-3.3-70b-versatile`. **OpenAI / Anthropic SDKs are not installed — do not import them.** |
+| LLM | **Groq only** | Default model `qwen/qwen3.8-27b`, fallback `openai/gpt-oss-120b` via `FallbackChatClient` (429/404/5xx; 503 when both are exhausted). **OpenAI / Anthropic SDKs are not installed — do not import them.** |
 | Embeddings | **sentence-transformers local** | Default `BAAI/bge-small-en-v1.5` (384 dim). Runs on CPU. |
-| Reranker | `BAAI/bge-reranker-base` (Week 2/stretch) | Off by default. |
+| Reranker | `BAAI/bge-reranker-base` | Off by default (`RERANKER_ENABLED`); ~1.4 s/query on CPU. Always via the `get_reranker()` singleton. |
 | Web search | Tavily | Key in `.env` (`TAVILY_API_KEY`). |
 | Code exec node | **stub only** | Router can route to it, but it returns "not enabled". |
 | **Auth** | **JWT (HS256) for users + API keys for machine clients.** Argon2id for password hashing. See ADR-006. |
 | **Tenancy** | **Per-user private collections + per-user conversations.** Every resource has a user owner. |
 | Tracing | Arize Phoenix (self-hosted in Compose) | Don't wire LangSmith. |
 | Metrics | Prometheus + Grafana | Custom domain metrics in `infra/metrics.py`. |
+| Eval | Custom LLM judge (not RAGAS) | Faithfulness + answer relevancy + lexical citation accuracy, scored in Celery. See ADR-012. |
 | Frontend | Next.js App Router + Tailwind + React Query | Full chat/voice/settings UI in `frontend/`. SSE-over-POST streaming; JWT in localStorage. See ADR-011. |
 | Deploy | Local Docker Compose only | No Fly/Railway/K8s yet. CI builds + pushes images to GHCR. |
 
@@ -48,7 +49,7 @@ src/agentstack/
   main.py             # FastAPI app factory + lifespan + dev-user bootstrap
   config.py           # Pydantic Settings (BaseSettings)
   api/
-    routes/           # auth, conversations, collections, ingest, documents, query, eval, health
+    routes/           # auth, conversations, collections, ingest, documents, query, eval, health, voice (WS)
     middleware/       # AuthMiddleware, RateLimitMiddleware, RequestIDMiddleware
     deps.py           # CurrentUserDep, DbSession, etc.
   core/
@@ -56,11 +57,14 @@ src/agentstack/
     retrieval/        # hybrid, reranker, cache
     agent/            # graph, nodes, tools, prompts
     eval/             # metrics, runner, golden
+    voice/            # VAD segmenter, ASR, TTS, sentence buffer
   models/             # SQLAlchemy ORM — User, ApiKey, Collection, Document, ChunkMetadata, Conversation, QueryLog, EvalResult
   schemas/            # Pydantic request/response (user, conversation, collection, document, query, common)
   services/           # password, jwt_service, user_service, conversation_service, api_key_service, bootstrap, query_service
   workers/            # Celery app + tasks
-  infra/              # llm, vectorstore, metrics, tracing, db, redis, logging
+  infra/              # llm (FallbackChatClient), vectorstore, metrics, tracing, db, redis, logging
+benchmarks/           # golden_docs.json, run_e2e, retrieval_ablation, rescore_eval, locustfile, results/
+frontend/             # Next.js UI
 ```
 
 ## Conventions
@@ -69,7 +73,8 @@ src/agentstack/
 - **Settings**: import `settings` from `agentstack.config`. Never read `os.environ` directly outside `config.py`.
 - **Async**: all I/O is async. Sync code only inside Celery tasks and inside CPU-bound helpers (embedding, parsing).
 - **DB sessions**: via the `DbSession` dep, never ad hoc engines.
-- **LLM calls**: `agentstack.infra.llm.get_chat_client()`. Don't import `groq.Groq` in feature code.
+- **LLM calls**: `agentstack.infra.llm.get_chat_client()`. Don't import `groq.Groq` in feature code. Catch `LLMUnavailableError`, not groq exceptions.
+- **Heavy models**: process singletons only (`get_embedder()`, `get_reranker()`). Never construct per request.
 - **Vector store**: `agentstack.infra.vectorstore.get_qdrant()` / `_sync()`. Don't import `QdrantClient` in feature code.
 - **Auth**: routes get `current: CurrentUserDep`. **Every resource query MUST filter by `current.id`** (or join through an owned parent). There's no "list all collections globally" — that would be a multi-tenant bug.
 - **Errors**: raise from `agentstack.api.errors`. Don't return ad hoc `{"error": ...}` dicts.
@@ -90,13 +95,14 @@ src/agentstack/
 | 1 | Per-user dev bootstrap | ✅ Real |
 | 2 | LangGraph router + retrieval + synthesis | ✅ Real |
 | 2 | Hybrid retrieval (dense + BM25 + RRF) | ✅ Real (see ADR-007) |
-| 2 | Cross-encoder reranker | ✅ Real (opt-in via `RERANKER_ENABLED`) |
+| 2 | Cross-encoder reranker | ✅ Real (opt-in via `RERANKER_ENABLED`; singleton since Week 6) |
 | 2 | Web search tool (Tavily) | ✅ Real (gated on `TAVILY_API_KEY`) |
 | 2 | Code execution tool | 🟡 Stub (returns "not enabled") |
+| 2 | Reflect node (self-check / retry) | 🟡 Stub (pass-through) |
 | 2 | Streaming `/query/stream` (SSE) | ✅ Real |
 | 2 | Conversation memory: prior-turns injection | ✅ Real (sliding window, last 5 Q&A) |
-| 2 | Conversation memory: summary compression | 🟡 Stub (column exists; Week 4) |
-| 3 | Eval pipeline (faithfulness + answer relevancy + citation accuracy) | ✅ Real (custom LLM-judge; not RAGAS — see ADR-008) |
+| 3 | Eval pipeline (faithfulness + answer relevancy + citation accuracy) | ✅ Real (custom LLM judge; see ADR-012) |
+| 3 | `GET /eval/aggregate`, `POST /eval/runs/{id}` | 🟡 Stub |
 | 3 | Auto-enqueue eval after every non-cached query | ✅ Real |
 | 3 | Phoenix tracing on the hot path (LLM, retrieval, agent nodes) | ✅ Real (OpenInference attrs; see ADR-008) |
 | 3 | Semantic + exact LLM cache w/ ingestion invalidation | ✅ Real (per-collection LRU; see ADR-009) |
@@ -112,12 +118,17 @@ src/agentstack/
 | 4 | Voice barge-in / interruption | ✅ Real (manual Stop + `interrupt` WS frame + auto-stop on new utterance) |
 | 4 | Per-user concurrent voice session cap | 🟡 Stub (Week 6) |
 | 4 | CI workflow | ✅ Real |
-| 4 | Load test (locust) | 🟡 Stub |
+| 4 | Load test (locust) | ✅ Real in `benchmarks/locustfile.py`; `tests/load/locustfile.py` is a stale stub |
 | 5 | Full chat UI — auth, streaming chat, citations, eval | ✅ Real (Next.js App Router; see ADR-011) |
 | 5 | Collections + document upload/manage UI | ✅ Real |
 | 5 | API-key management UI | ✅ Real |
 | 5 | Voice page restyled into shared shell | ✅ Real |
-| 5 | Conversation summarization | 🟡 Stub (column exists; Week 6) |
+| 5 | Conversation summarization | 🟡 Stub (column exists) |
+| 6 | Benchmark suite (golden set, e2e, retrieval ablation, load) | ✅ Real (`docs/benchmarks.md`) |
+| 6 | Eval judges full chunk text; index-aligned citation accuracy | ✅ Real (ADR-012) |
+| 6 | LLM fallback model + 503 on exhaustion + `agentstack_llm_fallbacks_total` | ✅ Real (ADR-005 addendum) |
+| 6 | Citation-marker normalization (`【n】` → `[n]`) | ✅ Real |
+| 6 | Multiple uvicorn workers | 🟡 Not done; one process saturates ~70 req/s |
 
 ## Common commands
 
@@ -125,13 +136,21 @@ src/agentstack/
 make up              # bring up postgres, redis, qdrant, phoenix, prometheus, grafana, api, worker
 make migrate         # alembic upgrade head
 make logs            # tail everything
-make test            # all pytest
+make test            # all pytest (Phoenix's pytest plugin is disabled in addopts; it crashes on import)
 make test-unit       # unit only (no docker required)
 make lint            # ruff
 make fmt             # ruff format + autofix
 make typecheck       # mypy
 make nuke            # destructive: down -v, wipes volumes
+uv run python benchmarks/run_e2e.py --keep   # live-stack benchmark; see docs/benchmarks.md
 ```
+
+## Gotchas
+
+- **Groq rotates models.** A 404 `model_not_found` on every query means the model was retired. Check `GET https://api.groq.com/openai/v1/models` and update `.env` + `config.py` defaults.
+- **Groq on-demand quotas are per model** (e.g. 1,000 output tokens/min). Eval competes with live queries; null eval scores under load are expected.
+- **Code is baked into the images.** After editing `src/`, rebuild, or use `docker-compose.dev.yml` (mounts `./src`). `docker compose up --force-recreate` alone runs the old image.
+- **Image builds** pull CUDA builds of torch (multi-GB). On flaky DNS use `docker build --network=host -f docker/api.Dockerfile -t agentstack-api .`
 
 ## Service URLs (local)
 

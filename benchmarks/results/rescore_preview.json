@@ -1,0 +1,213 @@
+{
+  "n": 34,
+  "faithfulness_scored": 33,
+  "faithfulness": 0.716,
+  "citation_accuracy_current": 0.525,
+  "citation_accuracy_index_aligned": 0.88,
+  "rows": [
+    {
+      "id": "q01",
+      "faithfulness": 0.3333333333333333,
+      "citation_accuracy_current": 0.75,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q02",
+      "faithfulness": 0.5,
+      "citation_accuracy_current": 0.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q03",
+      "faithfulness": 0.8666666666666667,
+      "citation_accuracy_current": 1.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q04",
+      "faithfulness": 0.8888888888888888,
+      "citation_accuracy_current": 0.25,
+      "citation_accuracy_index_aligned": 0.75
+    },
+    {
+      "id": "q05",
+      "faithfulness": 0.6111111111111112,
+      "citation_accuracy_current": 0.25,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q06",
+      "faithfulness": 0.8571428571428571,
+      "citation_accuracy_current": 0.6,
+      "citation_accuracy_index_aligned": 0.8
+    },
+    {
+      "id": "q07",
+      "faithfulness": 0.6,
+      "citation_accuracy_current": 0.0,
+      "citation_accuracy_index_aligned": 0.5
+    },
+    {
+      "id": "q08",
+      "faithfulness": 1.0,
+      "citation_accuracy_current": 0.6666666666666666,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q09",
+      "faithfulness": 0.8571428571428571,
+      "citation_accuracy_current": 0.5,
+      "citation_accuracy_index_aligned": 0.5
+    },
+    {
+      "id": "q10",
+      "faithfulness": null,
+      "citation_accuracy_current": 0.0,
+      "citation_accuracy_index_aligned": 0.0
+    },
+    {
+      "id": "q11",
+      "faithfulness": 1.0,
+      "citation_accuracy_current": 1.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q12",
+      "faithfulness": 1.0,
+      "citation_accuracy_current": 0.2,
+      "citation_accuracy_index_aligned": 0.2
+    },
+    {
+      "id": "q13",
+      "faithfulness": 1.0,
+      "citation_accuracy_current": 1.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q14",
+      "faithfulness": 0.5,
+      "citation_accuracy_current": 1.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q15",
+      "faithfulness": 0.875,
+      "citation_accuracy_current": 0.6666666666666666,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q16",
+      "faithfulness": 1.0,
+      "citation_accuracy_current": 0.5,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q17",
+      "faithfulness": 0.0,
+      "citation_accuracy_current": 0.5,
+      "citation_accuracy_index_aligned": 0.5
+    },
+    {
+      "id": "q18",
+      "faithfulness": 0.5555555555555556,
+      "citation_accuracy_current": 1.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q19",
+      "faithfulness": 0.7333333333333333,
+      "citation_accuracy_current": 0.16666666666666666,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q20",
+      "faithfulness": 0.625,
+      "citation_accuracy_current": 0.6666666666666666,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q21",
+      "faithfulness": 0.6,
+      "citation_accuracy_current": 0.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q23",
+      "faithfulness": 0.8571428571428571,
+      "citation_accuracy_current": 0.75,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q24",
+      "faithfulness": 1.0,
+      "citation_accuracy_current": 0.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q25",
+      "faithfulness": 1.0,
+      "citation_accuracy_current": 1.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q26",
+      "faithfulness": 0.6666666666666666,
+      "citation_accuracy_current": 0.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q27",
+      "faithfulness": 0.6666666666666666,
+      "citation_accuracy_current": 1.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q28",
+      "faithfulness": 1.0,
+      "citation_accuracy_current": 0.5,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q29",
+      "faithfulness": 0.5555555555555556,
+      "citation_accuracy_current": 0.6,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q30",
+      "faithfulness": 0.5555555555555556,
+      "citation_accuracy_current": 0.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q31",
+      "faithfulness": 0.6,
+      "citation_accuracy_current": 0.8,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q32",
+      "faithfulness": 0.0,
+      "citation_accuracy_current": 1.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q33",
+      "faithfulness": 0.6363636363636364,
+      "citation_accuracy_current": 0.16666666666666666,
+      "citation_accuracy_index_aligned": 0.6666666666666666
+    },
+    {
+      "id": "q34",
+      "faithfulness": 1.0,
+      "citation_accuracy_current": 1.0,
+      "citation_accuracy_index_aligned": 1.0
+    },
+    {
+      "id": "q35",
+      "faithfulness": 0.7,
+      "citation_accuracy_current": 0.3333333333333333,
+      "citation_accuracy_index_aligned": 1.0
+    }
+  ]
+}

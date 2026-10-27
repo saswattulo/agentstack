@@ -35,7 +35,7 @@ Chroma is the easiest path but reads as a tutorial choice. Milvus is overkill fo
 
 - Adds one Docker service + one volume.
 - Qdrant collections must be created with an explicit vector dim; switching the embedder requires a rebuild.
-- Hybrid search uses Qdrant's native sparse vector support (Week 2 work).
+- Hybrid search was planned on Qdrant's native sparse vectors. ADR-007 instead chose in-process BM25 over Postgres previews fused with dense via RRF; Qdrant holds dense vectors only.
 
 ## Revisit when
 

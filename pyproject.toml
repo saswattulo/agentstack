@@ -8,7 +8,7 @@ license = { file = "LICENSE" }
 authors = [{ name = "Saswat Tulo" }]
 dependencies = [
     # API + validation
-    "fastapi>=0.115.0",
+    "fastapi>=0.115.0,<0.137",
     "uvicorn[standard]>=0.32.0",
     "pydantic>=2.9.0",
     "pydantic-settings>=2.6.0",
@@ -139,7 +139,7 @@ disallow_untyped_defs = false
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
-addopts = "-ra --strict-markers"
+addopts = "-ra --strict-markers -p no:phoenix"  # arize-phoenix-client's plugin crashes on import with graphql-core 3.3
 markers = [
     "unit: fast unit tests",
     "integration: tests that hit Docker services",

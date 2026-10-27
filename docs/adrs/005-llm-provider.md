@@ -34,3 +34,12 @@ The platform's spec calls for a multi-provider abstraction (OpenAI / Anthropic /
 
 - The user obtains OpenAI/Anthropic keys and wants real fallback behavior.
 - Groq deprecates the chosen models (their model menu rotates).
+
+## Addendum (2026-10-25) — model rotation + real fallback
+
+The "Groq deprecates the chosen models" trigger fired: both `qwen/qwen3-32b` and `llama-3.3-70b-versatile` were retired, and every query returned a 404.
+
+- **Primary:** `qwen/qwen3.8-27b`. **Fallback:** `openai/gpt-oss-120b`.
+- `get_chat_client()` now returns a `FallbackChatClient`. It reroutes 429 / 404 / 5xx / connection errors from the primary to the fallback. Auth and bad-request errors are not rerouted, since they would fail on the other model too. The primary runs with `max_retries=0`: Groq quotas are per model, so rerouting at once beats waiting out SDK backoff on the throttled one. Streams fall back only before the first token. When both models are exhausted the API returns 503. Reroutes are counted in `agentstack_llm_fallbacks_total`.
+- `gpt-oss` cites as `【n】` / `【n†…】`. `normalize_citation_markers()` rewrites these to `[n]` before citations are extracted. Without it, fallback answers lost their citations (6/16 cited in the benchmark).
+- Measured effect: see `docs/benchmarks.md`.

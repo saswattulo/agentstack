@@ -47,8 +47,8 @@ class Settings(BaseSettings):
     celery_result_backend: str | None = None
 
     groq_api_key: str | None = None
-    groq_chat_model: str = "qwen/qwen3-32b"
-    groq_fallback_model: str = "llama-3.3-70b-versatile"
+    groq_chat_model: str = "qwen/qwen3.8-27b"
+    groq_fallback_model: str = "openai/gpt-oss-120b"
 
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     embedding_dim: int = 384

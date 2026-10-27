@@ -1,0 +1,63 @@
+{
+  "collection_id": "8566ad1e-bc4c-447d-ac5f-c0111c281cdf",
+  "k": 5,
+  "n": 35,
+  "methods": {
+    "dense": {
+      "hit@1": 0.914,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "mrr@5": 0.957,
+      "latency_ms_p50": 45.6,
+      "latency_ms_p95": 135.7
+    },
+    "bm25": {
+      "hit@1": 0.771,
+      "hit@3": 0.886,
+      "hit@5": 0.943,
+      "mrr@5": 0.835,
+      "latency_ms_p50": 2.5,
+      "latency_ms_p95": 3.0
+    },
+    "hybrid_rrf": {
+      "hit@1": 0.829,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "mrr@5": 0.91,
+      "latency_ms_p50": 59.5,
+      "latency_ms_p95": 122.8
+    },
+    "bm25 (full chunk text)": {
+      "hit@1": 0.743,
+      "hit@3": 0.914,
+      "hit@5": 0.943,
+      "mrr@5": 0.831,
+      "latency_ms_p50": 0.5,
+      "latency_ms_p95": 0.7
+    },
+    "hybrid_rrf (full-text bm25)": {
+      "hit@1": 0.886,
+      "hit@3": 0.971,
+      "hit@5": 0.971,
+      "mrr@5": 0.924,
+      "latency_ms_p50": 42.1,
+      "latency_ms_p95": 105.8
+    },
+    "hybrid_rrf+rerank (current: rerank fused top-5)": {
+      "hit@1": 0.886,
+      "hit@3": 0.971,
+      "hit@5": 1.0,
+      "mrr@5": 0.925,
+      "latency_ms_p50": 1438.1,
+      "latency_ms_p95": 2554.3
+    },
+    "hybrid_rrf+rerank (fused top-20 -> top-5)": {
+      "hit@1": 0.886,
+      "hit@3": 0.971,
+      "hit@5": 0.971,
+      "mrr@5": 0.929,
+      "latency_ms_p50": 5507.6,
+      "latency_ms_p95": 6708.2
+    }
+  }
+}
