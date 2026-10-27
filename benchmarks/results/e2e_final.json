@@ -1,0 +1,2318 @@
+{
+  "collection_id": "85a03e52-71bf-43ad-a504-6308808374c3",
+  "golden_size": 35,
+  "ingestion": {
+    "documents": 14,
+    "failed": [],
+    "words": 9279,
+    "chunks": 196,
+    "upload_s": 0.56,
+    "end_to_end_s": 133.35,
+    "chunks_per_s": 1.5,
+    "docs_per_min": 6.3
+  },
+  "quality": {
+    "n": 35,
+    "source_hit_rate": 0.943,
+    "citation_precision": 0.89,
+    "answers_with_citations": 0.971,
+    "keyword_accuracy": 0.886,
+    "eval_coverage": 1.0,
+    "faithfulness": 0.994,
+    "faithfulness_scored": 25,
+    "answer_relevancy": 0.884,
+    "citation_accuracy": 0.878
+  },
+  "cold": {
+    "n": 35,
+    "errors": 0,
+    "cache_hits": 0,
+    "cache_hit_kinds": {
+      "exact": 0,
+      "semantic": 0
+    },
+    "wall_ms": {
+      "n": 33,
+      "mean": 5892.1,
+      "p50": 3012.6,
+      "p95": 19288.5,
+      "max": 27226.5
+    },
+    "server_ms": {
+      "n": 33,
+      "mean": 5701.4,
+      "p50": 2833.0,
+      "p95": 19195.4,
+      "max": 27112
+    },
+    "retried": 2
+  },
+  "exact_replay": {
+    "n": 35,
+    "errors": 0,
+    "cache_hits": 35,
+    "cache_hit_kinds": {
+      "exact": 35,
+      "semantic": 0
+    },
+    "wall_ms": {
+      "n": 35,
+      "mean": 23.5,
+      "p50": 22.7,
+      "p95": 29.2,
+      "max": 37.1
+    },
+    "server_ms": {
+      "n": 35,
+      "mean": 0.1,
+      "p50": 0.0,
+      "p95": 0.3,
+      "max": 1
+    },
+    "retried": 0
+  },
+  "paraphrase": {
+    "n": 11,
+    "errors": 0,
+    "cache_hits": 11,
+    "cache_hit_kinds": {
+      "exact": 0,
+      "semantic": 11
+    },
+    "wall_ms": {
+      "n": 11,
+      "mean": 315.9,
+      "p50": 93.4,
+      "p95": 1347.8,
+      "max": 1522.3
+    },
+    "server_ms": {
+      "n": 11,
+      "mean": 290.3,
+      "p50": 71.0,
+      "p95": 1318.5,
+      "max": 1490
+    },
+    "retried": 0
+  },
+  "semantic_false_positives_on_cold_pass": 0,
+  "isolation": {
+    "status_codes": {
+      "get_collection": 404,
+      "list_documents": 404,
+      "get_document": 404,
+      "query_collection": 404,
+      "delete_document": 404
+    },
+    "blocked": 5,
+    "attempts": 5,
+    "foreign_collections_visible": 0
+  },
+  "rate_limit": {
+    "requests": 75,
+    "ok": 60,
+    "throttled": 15,
+    "first_429_at": 61
+  },
+  "rows": {
+    "cold": [
+      {
+        "id": "q01",
+        "question": "Which vector store does AgentStack use, and which alternative was considered the closest competitor?",
+        "error": null,
+        "query_id": "29c20d6a-ea1b-4da2-90ec-f2f5f6dd3e2b",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 27112,
+        "wall_ms": 27226.5,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "001-vector-store-choice.md",
+          "architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.5,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "AgentStack uses **Qdrant** as its vector store [2][4]. The candidates considered during the selection process included Chroma, Weaviate, Milvus, and pgvector [2]. However, the provided context does not specify which of these alternatives was considered the \"closest competitor\" [2].",
+        "eval": {
+          "query_id": "29c20d6a-ea1b-4da2-90ec-f2f5f6dd3e2b",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9422676321412083,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q02",
+        "question": "Why was Milvus rejected as the vector store?",
+        "error": null,
+        "query_id": "667acc47-8d2a-4eb5-b3dc-5a968f4b72ae",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 899,
+        "wall_ms": 1003.6,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "001-vector-store-choice.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Milvus was rejected as the vector store because it was considered \"overkill for a single-machine project\" [3].",
+        "eval": {
+          "query_id": "667acc47-8d2a-4eb5-b3dc-5a968f4b72ae",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8791750070135977,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 1
+          }
+        }
+      },
+      {
+        "id": "q03",
+        "question": "What is the default chunking strategy, and how can semantic chunking be enabled?",
+        "error": null,
+        "query_id": "6193bfaa-e18a-4b66-89e0-ba29174aedcf",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 1205,
+        "wall_ms": 1382.3,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The default chunking strategy is the **recursive character splitter**, which splits text on a hierarchy of separators (such as `\\n\\n`, `\\n`, `. `, `, `, and spaces) and merges them until a size budget is hit [1][4]. This strategy is chosen because it is deterministic, fast, dependency-free, and produces predictable chunk sizes that benefit hybrid search [3][4].\n\nSemantic chunking can be enabled by setting the `chunking_strategy` parameter on a `Collection` [3]. This strategy works by embedding sentences and grouping consecutive sentences whose pairwise distance is below a percentile threshold [4]. However, enabling semantic chunking doubles the ingestion cost because the text is embedded twice (once during the chunking process and once for the final chunk vectors) [2].",
+        "eval": {
+          "query_id": "6193bfaa-e18a-4b66-89e0-ba29174aedcf",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9175524065099854,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 0.8571428571428571,
+          "extra": {
+            "contexts_n": 4
+          }
+        }
+      },
+      {
+        "id": "q04",
+        "question": "Why does semantic chunking cost more at ingestion time than recursive chunking?",
+        "error": null,
+        "query_id": "021e6f34-4c20-4e49-b51f-0f4895f821b3",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 988,
+        "wall_ms": 1081.3,
+        "attempts": 1,
+        "intent": "analytical",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Semantic chunking costs more at ingestion time because it requires an additional embedding pass over each document to group sentences based on pairwise distance [4]. Specifically, a semantic-chunked collection embeds the text twice: once during the chunking process and again for the final chunk vectors [3]. This double embedding process effectively doubles the ingestion cost compared to recursive chunking, which is deterministic, fast, and dependency-free [1][4].",
+        "eval": {
+          "query_id": "021e6f34-4c20-4e49-b51f-0f4895f821b3",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.94676829871851,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 3
+          }
+        }
+      },
+      {
+        "id": "q05",
+        "question": "Why was LangGraph chosen for query orchestration?",
+        "error": null,
+        "query_id": "f86253ad-7e2b-4f4b-a896-29cc585dbb30",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 916,
+        "wall_ms": 1017.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "003-agent-framework.md",
+          "architecture.md",
+          "003-agent-framework.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.6666666666666666,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "LangGraph was chosen for query orchestration because the query pipeline is not a fixed chain but involves branching logic [4]. Specifically, the system requires different routing based on intent (e.g., factual questions go to retrieval, while news-related questions go to web search), fallback mechanisms for empty retrieval results, and loops for low-confidence synthesis [4]. LangGraph provides the necessary state machine capabilities to handle these conditional paths and state transitions, such as the Router, Retrieve, and Web search nodes [3]. Additionally, LangGraph integrates with the LangChain trace ecosystem [1].",
+        "eval": {
+          "query_id": "f86253ad-7e2b-4f4b-a896-29cc585dbb30",
+          "status": "ready",
+          "faithfulness": 0.8571428571428571,
+          "answer_relevancy": 0.8955891824484046,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 3
+          }
+        }
+      },
+      {
+        "id": "q06",
+        "question": "Is document ingestion orchestrated with LangGraph?",
+        "error": null,
+        "query_id": "40a5ea29-16a7-4f32-92d5-efc8b0114034",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 734,
+        "wall_ms": 1717.5,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "003-agent-framework.md",
+          "003-agent-framework.md",
+          "architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.6666666666666666,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "No, document ingestion is not orchestrated with LangGraph. The decision explicitly states to \"Keep ingestion in plain Python\" because the process \"doesn't branch\" [1][3]. While LangGraph is used for query orchestration [1], the ingestion pipeline involves streaming files, creating database rows, and enqueuing tasks in a linear flow [2]. The rationale for using LangGraph elsewhere is that its branching patterns map to conditional edges, a feature not required for the ingestion process [3].",
+        "eval": {
+          "query_id": "40a5ea29-16a7-4f32-92d5-efc8b0114034",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9376810219707008,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 0.8,
+          "extra": {
+            "contexts_n": 3
+          }
+        }
+      },
+      {
+        "id": "q07",
+        "question": "What is the default similarity threshold for the semantic cache?",
+        "error": null,
+        "query_id": "2a5f2d68-4c65-4e35-8673-f5e8bd4c3cdd",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 1767,
+        "wall_ms": 1854.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "004-caching-strategy.md",
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The default similarity threshold for the semantic cache is 0.95 [1]. This value is described as conservative to prevent topic-bleed, where semantically similar but distinct questions might incorrectly match [3].",
+        "eval": {
+          "query_id": "2a5f2d68-4c65-4e35-8673-f5e8bd4c3cdd",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9200743272627432,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 0.5,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q08",
+        "question": "How is the exact-match cache key computed?",
+        "error": null,
+        "query_id": "ad69b650-1f95-499d-bf5c-94f78bf4708c",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 1964,
+        "wall_ms": 2071.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "004-caching-strategy.md",
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The exact\u2011match cache uses a content\u2011addressed key that is generated by taking the SHA\u2011256 hash of the concatenated\u202fquestion\u202ftext and the\u202fcollection_id\u202f(e.g. `sha256(question + collection_id)`)[2]. This deterministic hash becomes the Redis key under the `llmcache:exact:` namespace[4].",
+        "eval": {
+          "query_id": "ad69b650-1f95-499d-bf5c-94f78bf4708c",
+          "status": "ready",
+          "faithfulness": null,
+          "answer_relevancy": 0.9211598985575744,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q09",
+        "question": "Which LLM provider does AgentStack use, and why are embeddings computed locally?",
+        "error": null,
+        "query_id": "9d4eb9ae-b64b-4d6d-b41c-6ce0e80b6dd2",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 1821,
+        "wall_ms": 1924.0,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "005-llm-provider.md",
+          "005-llm-provider.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": false,
+        "answer": "AgentStack\u2019s primary language\u2011model provider is **Groq**\u202f\u2014 the system is built to call Groq\u2019s `qwen/qwen3-32b` model (with a fallback to another model)\u202f[2].  \n\nEmbeddings are not obtained from the LLM provider; instead they are generated locally with a sentence\u2011transformers model (`BAAI/bge-small-en-v1.5`). This is because Groq does not expose an embeddings endpoint, so the system must compute embeddings on\u2011premise\u202f[3].",
+        "eval": {
+          "query_id": "9d4eb9ae-b64b-4d6d-b41c-6ce0e80b6dd2",
+          "status": "ready",
+          "faithfulness": null,
+          "answer_relevancy": 0.8739286389189646,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q10",
+        "question": "Which embedding model is used and what is its vector dimension?",
+        "error": null,
+        "query_id": "3e64075e-5939-4586-b77a-a400f359a32b",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 19145,
+        "wall_ms": 19212.2,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [],
+        "source_hit": false,
+        "citation_precision": 0.0,
+        "has_citation": false,
+        "keywords_ok": false,
+        "answer": "The provided context does not specify which embedding model is used nor its vector dimensionality.",
+        "eval": {
+          "query_id": "3e64075e-5939-4586-b77a-a400f359a32b",
+          "status": "ready",
+          "faithfulness": null,
+          "answer_relevancy": null,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 0.0,
+          "extra": {
+            "contexts_n": 20
+          }
+        }
+      },
+      {
+        "id": "q11",
+        "question": "Which algorithm is used to hash user passwords?",
+        "error": null,
+        "query_id": "b15e9004-705c-4ae5-8226-e5a87cd8be0c",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 43971,
+        "wall_ms": 44041.3,
+        "attempts": 2,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "006-auth-and-multitenancy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "User passwords are hashed using the **argon2id** algorithm, implemented via the `argon2-cffi` library [1].",
+        "eval": {
+          "query_id": "b15e9004-705c-4ae5-8226-e5a87cd8be0c",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9204960611101985,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 1
+          }
+        }
+      },
+      {
+        "id": "q12",
+        "question": "What JWT signing algorithm and default token lifetime does the auth system use?",
+        "error": null,
+        "query_id": "926e65d7-647a-4200-b8f2-f0e5ea29f94e",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 4207,
+        "wall_ms": 4339.9,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "011-frontend-architecture.md",
+          "README.md",
+          "006-auth-and-multitenancy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.3333333333333333,
+        "has_citation": true,
+        "keywords_ok": false,
+        "answer": "The provided context does not specify the JWT signing algorithm or the default token lifetime. The context confirms that the system uses JWTs for authentication [1][3][4] and that tokens are stored in `localStorage` [1], but it does not contain technical details regarding the specific signing algorithm (e.g., HS256, RS256) or the expiration duration of the tokens.",
+        "eval": {
+          "query_id": "926e65d7-647a-4200-b8f2-f0e5ea29f94e",
+          "status": "ready",
+          "faithfulness": null,
+          "answer_relevancy": 0.8528781156735059,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 0.25,
+          "extra": {
+            "contexts_n": 3
+          }
+        }
+      },
+      {
+        "id": "q13",
+        "question": "Can two different users each have a collection with the same name?",
+        "error": null,
+        "query_id": "706e3302-5683-4e88-9da7-2820bcfdd646",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 4230,
+        "wall_ms": 4360.7,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "006-auth-and-multitenancy.md",
+          "006-auth-and-multitenancy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Yes, two different users can each have a collection with the same name. The system enforces a unique constraint on the combination of `owner_id` and `name` rather than on `name` alone, which explicitly allows two users to both have a collection called \"papers\" [1]. This design supports strict data isolation, ensuring that a user can only see and query their own collections [2].",
+        "eval": {
+          "query_id": "706e3302-5683-4e88-9da7-2820bcfdd646",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9152640607260034,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q14",
+        "question": "What user does startup create when APP_ENV is dev?",
+        "error": null,
+        "query_id": "d6827f4e-5214-4ce8-972b-32001bbbd276",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 3269,
+        "wall_ms": 3413.2,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "README.md"
+        ],
+        "source_hit": false,
+        "citation_precision": 0.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "When `APP_ENV` is set to `dev`, the server auto-seeds a user with the email address `dev@agentstack.local` [1].",
+        "eval": {
+          "query_id": "d6827f4e-5214-4ce8-972b-32001bbbd276",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.7925075100601271,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 1
+          }
+        }
+      },
+      {
+        "id": "q15",
+        "question": "Why was email/password authentication chosen over OAuth?",
+        "error": null,
+        "query_id": "9e113893-c40f-472c-ba14-23cc752561e7",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 11296,
+        "wall_ms": 11363.3,
+        "attempts": 1,
+        "intent": "comparison",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "006-auth-and-multitenancy.md",
+          "006-auth-and-multitenancy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Email/password authentication was chosen over OAuth primarily because the user did not have a Google or GitHub OAuth app registered [1]. Additionally, email/password authentication requires only a single configuration knob (`JWT_SECRET_KEY`) and has zero external dependencies, which aligns with the project's goal of allowing the system to be started with \"one command up\" [1]. OAuth providers were explicitly listed as a non-goal for the current version of the system [4].",
+        "eval": {
+          "query_id": "9e113893-c40f-472c-ba14-23cc752561e7",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.851291250911914,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q16",
+        "question": "What rrf_k value does hybrid retrieval use for Reciprocal Rank Fusion?",
+        "error": null,
+        "query_id": "6c042cbe-8150-4bd4-863a-243bc3df9e9a",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 9817,
+        "wall_ms": 9963.6,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Hybrid retrieval uses an `rrf_k` value of **60** for Reciprocal Rank Fusion [2]. This value is described as an industry standard and an empirically robust default [2][3].",
+        "eval": {
+          "query_id": "6c042cbe-8150-4bd4-863a-243bc3df9e9a",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9020851794441502,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 0.6666666666666666,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q17",
+        "question": "By how much does the dense retriever oversample before fusion, and why?",
+        "error": null,
+        "query_id": "b625e5ec-bfdf-4aed-be23-f358abeed289",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 5782,
+        "wall_ms": 5883.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The dense retriever oversamples by a factor of 4 (specifically to `top_k * 4`) [1]. This is done because the dense top-5 results alone tend to cluster around a single good chunk, and oversampling (e.g., to 20 items) allows the sparse retrieval component to have a meaningful vote in the final top-5 results after fusion [2].",
+        "eval": {
+          "query_id": "b625e5ec-bfdf-4aed-be23-f358abeed289",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8856366914832473,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q18",
+        "question": "Why is the cross-encoder reranker disabled by default?",
+        "error": null,
+        "query_id": "8a1f5ca1-62ab-42e2-9f2d-4bdeef018987",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 3647,
+        "wall_ms": 3745.7,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The cross-encoder reranker is disabled by default for the following reasons:\n\n1.  **Latency:** It doubles the latency, as the cross-encoder takes approximately 100ms per pair on CPU [1].\n2.  **Model Download:** It requires a one-time download of approximately 280MB of weights upon first invocation [1][2].\n3.  **Computational Cost:** The re-scoring process is CPU-bound [2].\n4.  **Diminishing Returns:** A tuned dense and sparse pipeline already achieves approximately 90% of the top-1 precision, making the reranker a per-collection optimization knob rather than a necessary default [1].",
+        "eval": {
+          "query_id": "8a1f5ca1-62ab-42e2-9f2d-4bdeef018987",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9481173888851205,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q19",
+        "question": "Where is the BM25 index built and how is it invalidated when new chunks arrive?",
+        "error": null,
+        "query_id": "93305735-8aaa-41af-ab83-f13828061f4f",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 5077,
+        "wall_ms": 5147.6,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The BM25 index is built in-process using the `BM25Okapi` algorithm over the `chunk_metadata.content_preview` fields, which are already indexed in Postgres at ingestion [2]. The index is cached per collection within a process-local dictionary, keyed by the tuple `(collection_id, chunk_count)` [2][3].\n\nWhen new chunks arrive, the cache is invalidated implicitly via a count check; specifically, new ingestions auto-invalidate the cache by changing the `chunk_count` key [1][2]. However, if chunks are mutated in place without a change in the row count, the cache will remain stale, though this scenario is not currently applicable as chunks are not mutated in place today [1]. In multi-worker scenarios, the cache is not shared, meaning each worker will rebuild the index on its first miss [3].",
+        "eval": {
+          "query_id": "93305735-8aaa-41af-ab83-f13828061f4f",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8533894921083601,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 3
+          }
+        }
+      },
+      {
+        "id": "q20",
+        "question": "Why does hybrid retrieval use RRF instead of a linear combination of scores?",
+        "error": null,
+        "query_id": "169ac1b7-61eb-465f-95e6-cf0f1a936672",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 8615,
+        "wall_ms": 8739.7,
+        "attempts": 1,
+        "intent": "analytical",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Hybrid retrieval uses Reciprocal Rank Fusion (RRF) instead of a linear combination of scores because dense cosine and BM25 scores have incompatible distributions, making calibration methods like softmax or sigmoid fragile [1]. RRF operates solely on ranks, which eliminates the need for score calibration and provides robustness across different collections [1]. Additionally, because RRF is rank-based, the specific score scales of dense and sparse retrievers do not enter the mathematical calculation, allowing for equal weighting without complex normalization [3].",
+        "eval": {
+          "query_id": "169ac1b7-61eb-465f-95e6-cf0f1a936672",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8778388013453196,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q21",
+        "question": "Why were manual OpenTelemetry spans chosen over LangChain auto-instrumentation?",
+        "error": null,
+        "query_id": "313c0faa-16bf-4500-aa38-e042bb1932ea",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 4385,
+        "wall_ms": 4523.0,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "008-observability.md",
+          "008-observability.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Manual OpenTelemetry spans were chosen over LangChain auto-instrumentation for the following reasons:\n\n1.  **Incompatibility with Direct API Calls:** The application's chat client calls Groq directly via `AsyncGroq` rather than through `langchain_core.language_models.BaseChatModel` [2]. Because LangChain auto-instrumentation hooks into the LangChain runnable boundary, spans would not fire without wrapping the client in a `BaseChatModel` subclass [2].\n2.  **Avoidance of Unnecessary Complexity:** Creating the required `BaseChatModel` wrapper would have added over 50 lines of glue code with no functional benefit [2].\n3.  **Preservation of Control:** Using the wrapper would have resulted in a loss of direct control over token streaming [2][5].\n4.  **Efficiency and Ownership:** Manual spans required only approximately 80 lines of code in total and allowed the team to own every attribute that lands in Phoenix [5].",
+        "eval": {
+          "query_id": "313c0faa-16bf-4500-aa38-e042bb1932ea",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8497033048217376,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q22",
+        "question": "Which Phoenix project do the traces currently land in?",
+        "error": null,
+        "query_id": "a97f8874-184f-41e4-b014-a97208574f51",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 19271,
+        "wall_ms": 19402.9,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "008-observability.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The traces currently land in the `default` project [2].",
+        "eval": {
+          "query_id": "a97f8874-184f-41e4-b014-a97208574f51",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.802968929518498,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 1
+          }
+        }
+      },
+      {
+        "id": "q23",
+        "question": "Why are span input and output strings truncated to 2000 characters?",
+        "error": null,
+        "query_id": "757ed4f4-de7a-478e-a881-96ae877b5c7f",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 1226,
+        "wall_ms": 2166.0,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "008-observability.md",
+          "008-observability.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Span input and output strings are truncated to 2000 characters because the largest inputs, such as synthesizer prompts containing five chunks, regularly exceed 3000 characters [1]. Storing the full text in every span would inflate Phoenix storage and cause the user interface to become sluggish [1]. Truncating the text with a notation like `\u2026(+N chars)` keeps the spans small while maintaining readability [1][4].",
+        "eval": {
+          "query_id": "757ed4f4-de7a-478e-a881-96ae877b5c7f",
+          "status": "ready",
+          "faithfulness": null,
+          "answer_relevancy": 0.8695838899608819,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q24",
+        "question": "What is the maximum number of LLM cache entries kept per collection?",
+        "error": null,
+        "query_id": "bb828df7-df3e-431b-a5f5-7a90cfbb1cab",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 2112,
+        "wall_ms": 3012.6,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The maximum number of LLM cache entries kept per collection is 200 [4].",
+        "eval": {
+          "query_id": "bb828df7-df3e-431b-a5f5-7a90cfbb1cab",
+          "status": "ready",
+          "faithfulness": null,
+          "answer_relevancy": 0.9724339755045394,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 1
+          }
+        }
+      },
+      {
+        "id": "q25",
+        "question": "What happens to cached answers when a new document is ingested into a collection?",
+        "error": null,
+        "query_id": "9c127b1a-d414-48c9-9f58-8acc466fbe2c",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 2244,
+        "wall_ms": 2361.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "004-caching-strategy.md",
+          "004-caching-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "When a new document is added to a collection, the system invalidates the cache for that collection.\u202fAll cached answers (including their citations and model data) are cleared so that stale results aren\u2019t returned after the ingestion\u202f[2][1].",
+        "eval": {
+          "query_id": "9c127b1a-d414-48c9-9f58-8acc466fbe2c",
+          "status": "ready",
+          "faithfulness": null,
+          "answer_relevancy": 0.8824568285181101,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q26",
+        "question": "Why does the LLM cache skip storing conversational answers?",
+        "error": null,
+        "query_id": "aa9d36e1-e850-42c0-bbbd-005bfe8b3841",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 1678,
+        "wall_ms": 1752.3,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "009-cache-implementation.md",
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The cache deliberately does **not** store results whose `intent` is `\"conversational\"` (or whose answer is empty)\u202f\u2014\u202fsee the `set(...)` logic in the cache implementation\u202f[1].  \n\nThe reason is that a conversational reply is built by re\u2011using earlier turns of the dialogue. If that reply were cached and later retrieved for a *stand\u2011alone* question that has the same surface wording, the cached answer would be tied to the original conversation context and would therefore be incorrect for a new, unrelated conversation. Skipping caching of `\"conversational\"` intents prevents these wrong, context\u2011dependent answers from being served to other users\u202f[2].",
+        "eval": {
+          "query_id": "aa9d36e1-e850-42c0-bbbd-005bfe8b3841",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8530637368139952,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q27",
+        "question": "How does the cache behave when Redis returns errors?",
+        "error": null,
+        "query_id": "382df28b-d088-4b20-96ee-fc27f3dc9d75",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 1838,
+        "wall_ms": 1966.5,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "When a Redis call raises an exception, the cache is designed to \u201cfail\u2011open.\u201d Every Redis operation is wrapped in a\u202f`try/except` block; the exception is logged and the call returns as if the key were not present (a cache miss) or, for writes, does nothing (a no\u2011op)\u202f[1]. This way a Redis outage slows the system but does not cause it to break.",
+        "eval": {
+          "query_id": "382df28b-d088-4b20-96ee-fc27f3dc9d75",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8629168802168103,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 1
+          }
+        }
+      },
+      {
+        "id": "q28",
+        "question": "Which speech recognition model does the voice agent use?",
+        "error": null,
+        "query_id": "cb321ce6-9ee3-4962-b13e-977dcd2515f7",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 986,
+        "wall_ms": 1143.5,
+        "attempts": 2,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The voice agent uses the **Groq Whisper** model for speech recognition [3].",
+        "eval": {
+          "query_id": "cb321ce6-9ee3-4962-b13e-977dcd2515f7",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9144483647972467,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 1
+          }
+        }
+      },
+      {
+        "id": "q29",
+        "question": "Which TTS engine does the voice agent use, and why was Groq playai-tts dropped?",
+        "error": null,
+        "query_id": "400200fa-ab4e-448c-a556-2ffd42dc5ab5",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 7805,
+        "wall_ms": 7934.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "010-voice-architecture.md",
+          "010-voice-architecture.md",
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": false,
+        "answer": "The voice agent uses **Piper** (the open\u2011source\u202f`en_US\u2011amy\u2011medium` model) as its text\u2011to\u2011speech engine\u202f[4][1].  \n\nGroq\u2019s original TTS offering, **`playai\u2011tts`**, was abandoned during development: Groq de\u2011commissioned the service and did not provide a replacement on the tier being used, so the team switched to Piper instead\u202f[3].",
+        "eval": {
+          "query_id": "400200fa-ab4e-448c-a556-2ffd42dc5ab5",
+          "status": "ready",
+          "faithfulness": null,
+          "answer_relevancy": null,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 3
+          }
+        }
+      },
+      {
+        "id": "q30",
+        "question": "What audio format does the browser send over the voice WebSocket?",
+        "error": null,
+        "query_id": "138dc4c3-dba1-4210-a1f4-34c58364a779",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 1173,
+        "wall_ms": 1317.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "010-voice-architecture.md",
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The browser sends **16 kHz mono Int16 PCM** audio over the voice WebSocket [3]. Specifically, the audio is transmitted in frames of **512 samples**, which corresponds to **32 ms** per frame [2][3]. The browser's AudioWorklet downsamples the audio from the OS-provided 48 kHz to this 16 kHz rate [3].",
+        "eval": {
+          "query_id": "138dc4c3-dba1-4210-a1f4-34c58364a779",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8102260575746613,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q31",
+        "question": "How is the voice WebSocket connection authenticated?",
+        "error": null,
+        "query_id": "a3251576-f435-4907-8142-a6dc6dfdfa7d",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 13096,
+        "wall_ms": 13187.6,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "010-voice-architecture.md",
+          "010-voice-architecture.md",
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The voice WebSocket does not use the normal HTTP\u202f`Authorization` header.  \nWhen the client opens the WS it sends a **first message that contains a JWT** (along with any other needed identifiers). The server reads this message and **authenticates the token manually** \u2013 it bypasses the usual HTTP middleware because the WS connection has a different ASGI scope\u202f[1][3].  \n\nThis \u201cfirst\u2011message handshake\u201d was chosen because browsers cannot attach `Authorization` headers to a WebSocket upgrade, and putting the token in the URL or a cookie would expose it or require extra CORS handling\u202f[4].  \n\nSo, the voice WS connection is authenticated by manually validating a JWT supplied in the initial WebSocket message.  \u202f[1][3][4]",
+        "eval": {
+          "query_id": "a3251576-f435-4907-8142-a6dc6dfdfa7d",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8516570314776507,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 0.6666666666666666,
+          "extra": {
+            "contexts_n": 3
+          }
+        }
+      },
+      {
+        "id": "q32",
+        "question": "How many milliseconds of silence close a voice utterance by default?",
+        "error": null,
+        "query_id": "71c321db-74b5-40b3-beca-4ab3a36ea110",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 1319,
+        "wall_ms": 1490.5,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "By default, **800 milliseconds** of silence close a voice utterance [1].",
+        "eval": {
+          "query_id": "71c321db-74b5-40b3-beca-4ab3a36ea110",
+          "status": "ready",
+          "faithfulness": null,
+          "answer_relevancy": 0.9147596444118022,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 1
+          }
+        }
+      },
+      {
+        "id": "q33",
+        "question": "Where does the frontend store the JWT, and what security risk does that carry?",
+        "error": null,
+        "query_id": "3e089adb-b678-4bc6-b1b4-41314750bfe0",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 1993,
+        "wall_ms": 2123.5,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "011-frontend-architecture.md",
+          "011-frontend-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The frontend stores the JWT in `localStorage` [2][5]. This storage method carries the security risk that server-side rendering (SSR) is not possible because server components cannot read `localStorage` [5]. Consequently, the application must rely entirely on client-side data fetching to access the token, which requires a parallel server-fetch path if SSR were attempted, making the architecture more complex [5]. Additionally, because the token is stored in `localStorage`, it is accessible to any JavaScript running on the page, which can be a vector for Cross-Site Scripting (XSS) attacks, although the provided context specifically highlights the architectural limitation regarding SSR and the necessity of client-side-only data access as the primary consequence [5].",
+        "eval": {
+          "query_id": "3e089adb-b678-4bc6-b1b4-41314750bfe0",
+          "status": "ready",
+          "faithfulness": null,
+          "answer_relevancy": 0.8369137942764344,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 2
+          }
+        }
+      },
+      {
+        "id": "q34",
+        "question": "Why doesn't the frontend use the browser EventSource API for streaming answers?",
+        "error": null,
+        "query_id": "fe708742-ccb5-43c5-8343-f90abfd2f163",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 14682,
+        "wall_ms": 14823.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "011-frontend-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The frontend can\u2019t rely on the native `EventSource` API because the streaming endpoint is a **POST** request that carries a JSON body.\u202f`EventSource` only supports **GET** requests, so it can\u2019t be used to call `/api/v1/query/stream`.\u202fInstead, the code uses a hand\u2011rolled fetch reader that posts the query, reads the response body as text, splits the Server\u2011Sent Events frames, and yields typed events.\u202f[1]",
+        "eval": {
+          "query_id": "fe708742-ccb5-43c5-8343-f90abfd2f163",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8421080850415478,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 0.0,
+          "extra": {
+            "contexts_n": 1
+          }
+        }
+      },
+      {
+        "id": "q35",
+        "question": "Which library manages server state in the frontend?",
+        "error": null,
+        "query_id": "a8bd592e-039f-4b2a-be14-b0d7cd5756bf",
+        "cache_hit": false,
+        "cache_hit_kind": null,
+        "server_ms": 2833,
+        "wall_ms": 2931.2,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "011-frontend-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The library that manages server state in the frontend is `@tanstack/react-query` [3]. This library is responsible for managing server-side data such as collections, conversations, documents, evaluation results, and API keys, providing features like caching, invalidation, and polling via `refetchInterval` [3].",
+        "eval": {
+          "query_id": "a8bd592e-039f-4b2a-be14-b0d7cd5756bf",
+          "status": "ready",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8704282557273283,
+          "context_precision": null,
+          "context_recall": null,
+          "citation_accuracy": 1.0,
+          "extra": {
+            "contexts_n": 1
+          }
+        }
+      }
+    ],
+    "exact": [
+      {
+        "id": "q01",
+        "question": "Which vector store does AgentStack use, and which alternative was considered the closest competitor?",
+        "error": null,
+        "query_id": "8ddff03a-f836-494e-ac09-da494b548c68",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 24.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "001-vector-store-choice.md",
+          "architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.5,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "AgentStack uses **Qdrant** as its vector store [2][4]. The candidates considered during the selection process included Chroma, Weaviate, Milvus, and pgvector [2]. However, the provided context does not specify which of these alternatives was considered the \"closest competitor\" [2]."
+      },
+      {
+        "id": "q02",
+        "question": "Why was Milvus rejected as the vector store?",
+        "error": null,
+        "query_id": "9332d397-3e61-46f5-a552-7e3d36d5dfcd",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 23.2,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "001-vector-store-choice.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Milvus was rejected as the vector store because it was considered \"overkill for a single-machine project\" [3]."
+      },
+      {
+        "id": "q03",
+        "question": "What is the default chunking strategy, and how can semantic chunking be enabled?",
+        "error": null,
+        "query_id": "93ca955f-99be-4777-a2a3-770d1d58a927",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 22.7,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The default chunking strategy is the **recursive character splitter**, which splits text on a hierarchy of separators (such as `\\n\\n`, `\\n`, `. `, `, `, and spaces) and merges them until a size budget is hit [1][4]. This strategy is chosen because it is deterministic, fast, dependency-free, and produces predictable chunk sizes that benefit hybrid search [3][4].\n\nSemantic chunking can be enabled by setting the `chunking_strategy` parameter on a `Collection` [3]. This strategy works by embedding sentences and grouping consecutive sentences whose pairwise distance is below a percentile threshold [4]. However, enabling semantic chunking doubles the ingestion cost because the text is embedded twice (once during the chunking process and once for the final chunk vectors) [2]."
+      },
+      {
+        "id": "q04",
+        "question": "Why does semantic chunking cost more at ingestion time than recursive chunking?",
+        "error": null,
+        "query_id": "5d765b8b-0ccc-4306-949e-7643a99f128d",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 21.9,
+        "attempts": 1,
+        "intent": "analytical",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Semantic chunking costs more at ingestion time because it requires an additional embedding pass over each document to group sentences based on pairwise distance [4]. Specifically, a semantic-chunked collection embeds the text twice: once during the chunking process and again for the final chunk vectors [3]. This double embedding process effectively doubles the ingestion cost compared to recursive chunking, which is deterministic, fast, and dependency-free [1][4]."
+      },
+      {
+        "id": "q05",
+        "question": "Why was LangGraph chosen for query orchestration?",
+        "error": null,
+        "query_id": "be3a3ce7-6a6b-4f4b-9220-7c76e44be63d",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 23.2,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "003-agent-framework.md",
+          "architecture.md",
+          "003-agent-framework.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.6666666666666666,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "LangGraph was chosen for query orchestration because the query pipeline is not a fixed chain but involves branching logic [4]. Specifically, the system requires different routing based on intent (e.g., factual questions go to retrieval, while news-related questions go to web search), fallback mechanisms for empty retrieval results, and loops for low-confidence synthesis [4]. LangGraph provides the necessary state machine capabilities to handle these conditional paths and state transitions, such as the Router, Retrieve, and Web search nodes [3]. Additionally, LangGraph integrates with the LangChain trace ecosystem [1]."
+      },
+      {
+        "id": "q06",
+        "question": "Is document ingestion orchestrated with LangGraph?",
+        "error": null,
+        "query_id": "e068d53b-5f3f-4621-98f2-55aeae54a631",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 22.7,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "003-agent-framework.md",
+          "003-agent-framework.md",
+          "architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.6666666666666666,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "No, document ingestion is not orchestrated with LangGraph. The decision explicitly states to \"Keep ingestion in plain Python\" because the process \"doesn't branch\" [1][3]. While LangGraph is used for query orchestration [1], the ingestion pipeline involves streaming files, creating database rows, and enqueuing tasks in a linear flow [2]. The rationale for using LangGraph elsewhere is that its branching patterns map to conditional edges, a feature not required for the ingestion process [3]."
+      },
+      {
+        "id": "q07",
+        "question": "What is the default similarity threshold for the semantic cache?",
+        "error": null,
+        "query_id": "b6c77940-c986-4d28-b638-5a9b144a1c73",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 28.9,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "004-caching-strategy.md",
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The default similarity threshold for the semantic cache is 0.95 [1]. This value is described as conservative to prevent topic-bleed, where semantically similar but distinct questions might incorrectly match [3]."
+      },
+      {
+        "id": "q08",
+        "question": "How is the exact-match cache key computed?",
+        "error": null,
+        "query_id": "3bf5bbf7-1883-4efd-936d-fcb2cb0c20f1",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 23.7,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "004-caching-strategy.md",
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The exact\u2011match cache uses a content\u2011addressed key that is generated by taking the SHA\u2011256 hash of the concatenated\u202fquestion\u202ftext and the\u202fcollection_id\u202f(e.g. `sha256(question + collection_id)`)[2]. This deterministic hash becomes the Redis key under the `llmcache:exact:` namespace[4]."
+      },
+      {
+        "id": "q09",
+        "question": "Which LLM provider does AgentStack use, and why are embeddings computed locally?",
+        "error": null,
+        "query_id": "b74249d5-d8b4-4fd2-85c6-afc398ff227b",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 24.0,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "005-llm-provider.md",
+          "005-llm-provider.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": false,
+        "answer": "AgentStack\u2019s primary language\u2011model provider is **Groq**\u202f\u2014 the system is built to call Groq\u2019s `qwen/qwen3-32b` model (with a fallback to another model)\u202f[2].  \n\nEmbeddings are not obtained from the LLM provider; instead they are generated locally with a sentence\u2011transformers model (`BAAI/bge-small-en-v1.5`). This is because Groq does not expose an embeddings endpoint, so the system must compute embeddings on\u2011premise\u202f[3]."
+      },
+      {
+        "id": "q10",
+        "question": "Which embedding model is used and what is its vector dimension?",
+        "error": null,
+        "query_id": "78f0967c-248d-4fd6-994d-f7629f631967",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 24.8,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [],
+        "source_hit": false,
+        "citation_precision": 0.0,
+        "has_citation": false,
+        "keywords_ok": false,
+        "answer": "The provided context does not specify which embedding model is used nor its vector dimensionality."
+      },
+      {
+        "id": "q11",
+        "question": "Which algorithm is used to hash user passwords?",
+        "error": null,
+        "query_id": "d489f8b9-3ac2-4f52-acff-148deff7f575",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 24.0,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "006-auth-and-multitenancy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "User passwords are hashed using the **argon2id** algorithm, implemented via the `argon2-cffi` library [1]."
+      },
+      {
+        "id": "q12",
+        "question": "What JWT signing algorithm and default token lifetime does the auth system use?",
+        "error": null,
+        "query_id": "810a3a74-7180-4586-8911-14fe7dc07651",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 21.2,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "011-frontend-architecture.md",
+          "README.md",
+          "006-auth-and-multitenancy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.3333333333333333,
+        "has_citation": true,
+        "keywords_ok": false,
+        "answer": "The provided context does not specify the JWT signing algorithm or the default token lifetime. The context confirms that the system uses JWTs for authentication [1][3][4] and that tokens are stored in `localStorage` [1], but it does not contain technical details regarding the specific signing algorithm (e.g., HS256, RS256) or the expiration duration of the tokens."
+      },
+      {
+        "id": "q13",
+        "question": "Can two different users each have a collection with the same name?",
+        "error": null,
+        "query_id": "1157d298-6eb4-4480-a729-acb67d734d29",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 21.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "006-auth-and-multitenancy.md",
+          "006-auth-and-multitenancy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Yes, two different users can each have a collection with the same name. The system enforces a unique constraint on the combination of `owner_id` and `name` rather than on `name` alone, which explicitly allows two users to both have a collection called \"papers\" [1]. This design supports strict data isolation, ensuring that a user can only see and query their own collections [2]."
+      },
+      {
+        "id": "q14",
+        "question": "What user does startup create when APP_ENV is dev?",
+        "error": null,
+        "query_id": "4744a9c3-ef28-4075-b638-4c397619a8be",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 22.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "README.md"
+        ],
+        "source_hit": false,
+        "citation_precision": 0.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "When `APP_ENV` is set to `dev`, the server auto-seeds a user with the email address `dev@agentstack.local` [1]."
+      },
+      {
+        "id": "q15",
+        "question": "Why was email/password authentication chosen over OAuth?",
+        "error": null,
+        "query_id": "2258b6dc-e1c5-488b-9515-61ee88fb4fb9",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 21.8,
+        "attempts": 1,
+        "intent": "comparison",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "006-auth-and-multitenancy.md",
+          "006-auth-and-multitenancy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Email/password authentication was chosen over OAuth primarily because the user did not have a Google or GitHub OAuth app registered [1]. Additionally, email/password authentication requires only a single configuration knob (`JWT_SECRET_KEY`) and has zero external dependencies, which aligns with the project's goal of allowing the system to be started with \"one command up\" [1]. OAuth providers were explicitly listed as a non-goal for the current version of the system [4]."
+      },
+      {
+        "id": "q16",
+        "question": "What rrf_k value does hybrid retrieval use for Reciprocal Rank Fusion?",
+        "error": null,
+        "query_id": "3dccfc52-a05b-4c3e-9aeb-f9c47c459608",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 24.2,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Hybrid retrieval uses an `rrf_k` value of **60** for Reciprocal Rank Fusion [2]. This value is described as an industry standard and an empirically robust default [2][3]."
+      },
+      {
+        "id": "q17",
+        "question": "By how much does the dense retriever oversample before fusion, and why?",
+        "error": null,
+        "query_id": "f30755d3-35fa-4f02-a3ee-7050fd714060",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 22.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The dense retriever oversamples by a factor of 4 (specifically to `top_k * 4`) [1]. This is done because the dense top-5 results alone tend to cluster around a single good chunk, and oversampling (e.g., to 20 items) allows the sparse retrieval component to have a meaningful vote in the final top-5 results after fusion [2]."
+      },
+      {
+        "id": "q18",
+        "question": "Why is the cross-encoder reranker disabled by default?",
+        "error": null,
+        "query_id": "101a7099-d70f-4a94-bd69-b6977aec6cb9",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 22.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The cross-encoder reranker is disabled by default for the following reasons:\n\n1.  **Latency:** It doubles the latency, as the cross-encoder takes approximately 100ms per pair on CPU [1].\n2.  **Model Download:** It requires a one-time download of approximately 280MB of weights upon first invocation [1][2].\n3.  **Computational Cost:** The re-scoring process is CPU-bound [2].\n4.  **Diminishing Returns:** A tuned dense and sparse pipeline already achieves approximately 90% of the top-1 precision, making the reranker a per-collection optimization knob rather than a necessary default [1]."
+      },
+      {
+        "id": "q19",
+        "question": "Where is the BM25 index built and how is it invalidated when new chunks arrive?",
+        "error": null,
+        "query_id": "086a4156-3866-44f0-8ea1-0c2c64d8ac92",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 1,
+        "wall_ms": 24.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The BM25 index is built in-process using the `BM25Okapi` algorithm over the `chunk_metadata.content_preview` fields, which are already indexed in Postgres at ingestion [2]. The index is cached per collection within a process-local dictionary, keyed by the tuple `(collection_id, chunk_count)` [2][3].\n\nWhen new chunks arrive, the cache is invalidated implicitly via a count check; specifically, new ingestions auto-invalidate the cache by changing the `chunk_count` key [1][2]. However, if chunks are mutated in place without a change in the row count, the cache will remain stale, though this scenario is not currently applicable as chunks are not mutated in place today [1]. In multi-worker scenarios, the cache is not shared, meaning each worker will rebuild the index on its first miss [3]."
+      },
+      {
+        "id": "q20",
+        "question": "Why does hybrid retrieval use RRF instead of a linear combination of scores?",
+        "error": null,
+        "query_id": "30f53a98-56fa-420a-a67a-bcbcb8c2e2a1",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 22.4,
+        "attempts": 1,
+        "intent": "analytical",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Hybrid retrieval uses Reciprocal Rank Fusion (RRF) instead of a linear combination of scores because dense cosine and BM25 scores have incompatible distributions, making calibration methods like softmax or sigmoid fragile [1]. RRF operates solely on ranks, which eliminates the need for score calibration and provides robustness across different collections [1]. Additionally, because RRF is rank-based, the specific score scales of dense and sparse retrievers do not enter the mathematical calculation, allowing for equal weighting without complex normalization [3]."
+      },
+      {
+        "id": "q21",
+        "question": "Why were manual OpenTelemetry spans chosen over LangChain auto-instrumentation?",
+        "error": null,
+        "query_id": "c9519186-b4a1-40e0-bcef-0a22f0c21227",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 24.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "008-observability.md",
+          "008-observability.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Manual OpenTelemetry spans were chosen over LangChain auto-instrumentation for the following reasons:\n\n1.  **Incompatibility with Direct API Calls:** The application's chat client calls Groq directly via `AsyncGroq` rather than through `langchain_core.language_models.BaseChatModel` [2]. Because LangChain auto-instrumentation hooks into the LangChain runnable boundary, spans would not fire without wrapping the client in a `BaseChatModel` subclass [2].\n2.  **Avoidance of Unnecessary Complexity:** Creating the required `BaseChatModel` wrapper would have added over 50 lines of glue code with no functional benefit [2].\n3.  **Preservation of Control:** Using the wrapper would have resulted in a loss of direct control over token streaming [2][5].\n4.  **Efficiency and Ownership:** Manual spans required only approximately 80 lines of code in total and allowed the team to own every attribute that lands in Phoenix [5]."
+      },
+      {
+        "id": "q22",
+        "question": "Which Phoenix project do the traces currently land in?",
+        "error": null,
+        "query_id": "8a447934-0a32-4b4c-bf0c-24b224aaccb6",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 22.8,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "008-observability.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The traces currently land in the `default` project [2]."
+      },
+      {
+        "id": "q23",
+        "question": "Why are span input and output strings truncated to 2000 characters?",
+        "error": null,
+        "query_id": "58cf0b37-4323-42ca-af23-a071c2329d0a",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 1,
+        "wall_ms": 37.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "008-observability.md",
+          "008-observability.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Span input and output strings are truncated to 2000 characters because the largest inputs, such as synthesizer prompts containing five chunks, regularly exceed 3000 characters [1]. Storing the full text in every span would inflate Phoenix storage and cause the user interface to become sluggish [1]. Truncating the text with a notation like `\u2026(+N chars)` keeps the spans small while maintaining readability [1][4]."
+      },
+      {
+        "id": "q24",
+        "question": "What is the maximum number of LLM cache entries kept per collection?",
+        "error": null,
+        "query_id": "3d103359-8a1a-4355-b8f2-4facc1aa556d",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 29.8,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The maximum number of LLM cache entries kept per collection is 200 [4]."
+      },
+      {
+        "id": "q25",
+        "question": "What happens to cached answers when a new document is ingested into a collection?",
+        "error": null,
+        "query_id": "42feb3d5-1806-45f9-9bc5-1352e0389b3f",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 20.3,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "004-caching-strategy.md",
+          "004-caching-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "When a new document is added to a collection, the system invalidates the cache for that collection.\u202fAll cached answers (including their citations and model data) are cleared so that stale results aren\u2019t returned after the ingestion\u202f[2][1]."
+      },
+      {
+        "id": "q26",
+        "question": "Why does the LLM cache skip storing conversational answers?",
+        "error": null,
+        "query_id": "ac2aa0a9-fd37-4d7e-b8c3-d9d3092caf7e",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 20.7,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "009-cache-implementation.md",
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The cache deliberately does **not** store results whose `intent` is `\"conversational\"` (or whose answer is empty)\u202f\u2014\u202fsee the `set(...)` logic in the cache implementation\u202f[1].  \n\nThe reason is that a conversational reply is built by re\u2011using earlier turns of the dialogue. If that reply were cached and later retrieved for a *stand\u2011alone* question that has the same surface wording, the cached answer would be tied to the original conversation context and would therefore be incorrect for a new, unrelated conversation. Skipping caching of `\"conversational\"` intents prevents these wrong, context\u2011dependent answers from being served to other users\u202f[2]."
+      },
+      {
+        "id": "q27",
+        "question": "How does the cache behave when Redis returns errors?",
+        "error": null,
+        "query_id": "11e3e67f-1090-4af1-aae0-9e0affea3690",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 23.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "When a Redis call raises an exception, the cache is designed to \u201cfail\u2011open.\u201d Every Redis operation is wrapped in a\u202f`try/except` block; the exception is logged and the call returns as if the key were not present (a cache miss) or, for writes, does nothing (a no\u2011op)\u202f[1]. This way a Redis outage slows the system but does not cause it to break."
+      },
+      {
+        "id": "q28",
+        "question": "Which speech recognition model does the voice agent use?",
+        "error": null,
+        "query_id": "043dc207-6d76-40ab-92b1-988679fead36",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 23.5,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The voice agent uses the **Groq Whisper** model for speech recognition [3]."
+      },
+      {
+        "id": "q29",
+        "question": "Which TTS engine does the voice agent use, and why was Groq playai-tts dropped?",
+        "error": null,
+        "query_id": "8db82140-b3e5-459a-8f48-f83b13567eca",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 21.7,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "010-voice-architecture.md",
+          "010-voice-architecture.md",
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": false,
+        "answer": "The voice agent uses **Piper** (the open\u2011source\u202f`en_US\u2011amy\u2011medium` model) as its text\u2011to\u2011speech engine\u202f[4][1].  \n\nGroq\u2019s original TTS offering, **`playai\u2011tts`**, was abandoned during development: Groq de\u2011commissioned the service and did not provide a replacement on the tier being used, so the team switched to Piper instead\u202f[3]."
+      },
+      {
+        "id": "q30",
+        "question": "What audio format does the browser send over the voice WebSocket?",
+        "error": null,
+        "query_id": "4a85319b-73cc-4604-8965-446b6a5f88cb",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 22.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "010-voice-architecture.md",
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The browser sends **16 kHz mono Int16 PCM** audio over the voice WebSocket [3]. Specifically, the audio is transmitted in frames of **512 samples**, which corresponds to **32 ms** per frame [2][3]. The browser's AudioWorklet downsamples the audio from the OS-provided 48 kHz to this 16 kHz rate [3]."
+      },
+      {
+        "id": "q31",
+        "question": "How is the voice WebSocket connection authenticated?",
+        "error": null,
+        "query_id": "f91408be-4018-48a6-93d4-5682a0956c92",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 23.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "010-voice-architecture.md",
+          "010-voice-architecture.md",
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The voice WebSocket does not use the normal HTTP\u202f`Authorization` header.  \nWhen the client opens the WS it sends a **first message that contains a JWT** (along with any other needed identifiers). The server reads this message and **authenticates the token manually** \u2013 it bypasses the usual HTTP middleware because the WS connection has a different ASGI scope\u202f[1][3].  \n\nThis \u201cfirst\u2011message handshake\u201d was chosen because browsers cannot attach `Authorization` headers to a WebSocket upgrade, and putting the token in the URL or a cookie would expose it or require extra CORS handling\u202f[4].  \n\nSo, the voice WS connection is authenticated by manually validating a JWT supplied in the initial WebSocket message.  \u202f[1][3][4]"
+      },
+      {
+        "id": "q32",
+        "question": "How many milliseconds of silence close a voice utterance by default?",
+        "error": null,
+        "query_id": "9ec71a59-d21a-4ad6-9c37-c69e1f760bc4",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 22.6,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "By default, **800 milliseconds** of silence close a voice utterance [1]."
+      },
+      {
+        "id": "q33",
+        "question": "Where does the frontend store the JWT, and what security risk does that carry?",
+        "error": null,
+        "query_id": "87c99584-1e50-4130-a51c-20e6de91410e",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 21.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "011-frontend-architecture.md",
+          "011-frontend-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The frontend stores the JWT in `localStorage` [2][5]. This storage method carries the security risk that server-side rendering (SSR) is not possible because server components cannot read `localStorage` [5]. Consequently, the application must rely entirely on client-side data fetching to access the token, which requires a parallel server-fetch path if SSR were attempted, making the architecture more complex [5]. Additionally, because the token is stored in `localStorage`, it is accessible to any JavaScript running on the page, which can be a vector for Cross-Site Scripting (XSS) attacks, although the provided context specifically highlights the architectural limitation regarding SSR and the necessity of client-side-only data access as the primary consequence [5]."
+      },
+      {
+        "id": "q34",
+        "question": "Why doesn't the frontend use the browser EventSource API for streaming answers?",
+        "error": null,
+        "query_id": "62a5d73a-9d9e-49ef-8171-c16ace5f83b0",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 22.5,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [
+          "011-frontend-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The frontend can\u2019t rely on the native `EventSource` API because the streaming endpoint is a **POST** request that carries a JSON body.\u202f`EventSource` only supports **GET** requests, so it can\u2019t be used to call `/api/v1/query/stream`.\u202fInstead, the code uses a hand\u2011rolled fetch reader that posts the query, reads the response body as text, splits the Server\u2011Sent Events frames, and yields typed events.\u202f[1]"
+      },
+      {
+        "id": "q35",
+        "question": "Which library manages server state in the frontend?",
+        "error": null,
+        "query_id": "205dee49-1d0d-4236-b73e-256d43691e4c",
+        "cache_hit": true,
+        "cache_hit_kind": "exact",
+        "server_ms": 0,
+        "wall_ms": 21.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "011-frontend-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The library that manages server state in the frontend is `@tanstack/react-query` [3]. This library is responsible for managing server-side data such as collections, conversations, documents, evaluation results, and API keys, providing features like caching, invalidation, and polling via `refetchInterval` [3]."
+      }
+    ],
+    "paraphrase": [
+      {
+        "id": "q01",
+        "question": "Which vector store does AgentStack use, and what alternative was the closest competitor considered?",
+        "error": null,
+        "query_id": "7a1583bb-83f5-4969-8070-6ba40ecd1627",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 84,
+        "wall_ms": 109.2,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "001-vector-store-choice.md",
+          "architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.5,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "AgentStack uses **Qdrant** as its vector store [2][4]. The candidates considered during the selection process included Chroma, Weaviate, Milvus, and pgvector [2]. However, the provided context does not specify which of these alternatives was considered the \"closest competitor\" [2]."
+      },
+      {
+        "id": "q03",
+        "question": "What is the default chunking strategy and how do you enable semantic chunking?",
+        "error": null,
+        "query_id": "68b19cb1-42ab-482b-85ec-6dc358771628",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 71,
+        "wall_ms": 93.4,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md",
+          "002-chunking-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The default chunking strategy is the **recursive character splitter**, which splits text on a hierarchy of separators (such as `\\n\\n`, `\\n`, `. `, `, `, and spaces) and merges them until a size budget is hit [1][4]. This strategy is chosen because it is deterministic, fast, dependency-free, and produces predictable chunk sizes that benefit hybrid search [3][4].\n\nSemantic chunking can be enabled by setting the `chunking_strategy` parameter on a `Collection` [3]. This strategy works by embedding sentences and grouping consecutive sentences whose pairwise distance is below a percentile threshold [4]. However, enabling semantic chunking doubles the ingestion cost because the text is embedded twice (once during the chunking process and once for the final chunk vectors) [2]."
+      },
+      {
+        "id": "q05",
+        "question": "Why was LangGraph picked for orchestrating queries?",
+        "error": null,
+        "query_id": "8e620077-1c59-4d5a-96b4-cfc2659ffcaa",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 50,
+        "wall_ms": 73.1,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "003-agent-framework.md",
+          "architecture.md",
+          "003-agent-framework.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.6666666666666666,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "LangGraph was chosen for query orchestration because the query pipeline is not a fixed chain but involves branching logic [4]. Specifically, the system requires different routing based on intent (e.g., factual questions go to retrieval, while news-related questions go to web search), fallback mechanisms for empty retrieval results, and loops for low-confidence synthesis [4]. LangGraph provides the necessary state machine capabilities to handle these conditional paths and state transitions, such as the Router, Retrieve, and Web search nodes [3]. Additionally, LangGraph integrates with the LangChain trace ecosystem [1]."
+      },
+      {
+        "id": "q07",
+        "question": "What's the default similarity threshold used by the semantic cache?",
+        "error": null,
+        "query_id": "c49aa072-f9bc-498a-a0a1-28811b965954",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 45,
+        "wall_ms": 69.0,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "004-caching-strategy.md",
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The default similarity threshold for the semantic cache is 0.95 [1]. This value is described as conservative to prevent topic-bleed, where semantically similar but distinct questions might incorrectly match [3]."
+      },
+      {
+        "id": "q10",
+        "question": "Which embedding model is used, and what's its vector dimension?",
+        "error": null,
+        "query_id": "ed19fdba-579f-4d60-bbf9-804f78c5210a",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 78,
+        "wall_ms": 101.9,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "openai/gpt-oss-120b",
+        "cited_docs": [],
+        "source_hit": false,
+        "citation_precision": 0.0,
+        "has_citation": false,
+        "keywords_ok": false,
+        "answer": "The provided context does not specify which embedding model is used nor its vector dimensionality."
+      },
+      {
+        "id": "q12",
+        "question": "What JWT signing algorithm and default token lifetime are used by the auth system?",
+        "error": null,
+        "query_id": "49505ae0-3757-4f03-9f8c-adf2dbf6db83",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 1147,
+        "wall_ms": 1173.3,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "011-frontend-architecture.md",
+          "README.md",
+          "006-auth-and-multitenancy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 0.3333333333333333,
+        "has_citation": true,
+        "keywords_ok": false,
+        "answer": "The provided context does not specify the JWT signing algorithm or the default token lifetime. The context confirms that the system uses JWTs for authentication [1][3][4] and that tokens are stored in `localStorage` [1], but it does not contain technical details regarding the specific signing algorithm (e.g., HS256, RS256) or the expiration duration of the tokens."
+      },
+      {
+        "id": "q16",
+        "question": "What rrf_k value is used by hybrid retrieval for Reciprocal Rank Fusion?",
+        "error": null,
+        "query_id": "8dd93989-6f94-4794-ab83-c53066875038",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 1490,
+        "wall_ms": 1522.3,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "Hybrid retrieval uses an `rrf_k` value of **60** for Reciprocal Rank Fusion [2]. This value is described as an industry standard and an empirically robust default [2][3]."
+      },
+      {
+        "id": "q18",
+        "question": "Why is the cross-encoder reranker turned off by default?",
+        "error": null,
+        "query_id": "79856d55-0374-48a1-9a8a-bf36d89b857d",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 86,
+        "wall_ms": 115.3,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "007-retrieval-strategy.md",
+          "007-retrieval-strategy.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The cross-encoder reranker is disabled by default for the following reasons:\n\n1.  **Latency:** It doubles the latency, as the cross-encoder takes approximately 100ms per pair on CPU [1].\n2.  **Model Download:** It requires a one-time download of approximately 280MB of weights upon first invocation [1][2].\n3.  **Computational Cost:** The re-scoring process is CPU-bound [2].\n4.  **Diminishing Returns:** A tuned dense and sparse pipeline already achieves approximately 90% of the top-1 precision, making the reranker a per-collection optimization knob rather than a necessary default [1]."
+      },
+      {
+        "id": "q24",
+        "question": "What's the maximum number of LLM cache entries kept per collection?",
+        "error": null,
+        "query_id": "2c2c1a53-538c-4bf9-aa6e-982b352531f6",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 43,
+        "wall_ms": 66.6,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "009-cache-implementation.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The maximum number of LLM cache entries kept per collection is 200 [4]."
+      },
+      {
+        "id": "q28",
+        "question": "Which speech recognition model is used by the voice agent?",
+        "error": null,
+        "query_id": "38d0e119-acae-4725-b733-87320331a0e6",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 32,
+        "wall_ms": 59.2,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "010-voice-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The voice agent uses the **Groq Whisper** model for speech recognition [3]."
+      },
+      {
+        "id": "q33",
+        "question": "Where is the JWT stored by the frontend, and what security risk does that carry?",
+        "error": null,
+        "query_id": "7fda4eb0-00b3-4180-9376-d76e6f814a0f",
+        "cache_hit": true,
+        "cache_hit_kind": "semantic",
+        "server_ms": 67,
+        "wall_ms": 92.0,
+        "attempts": 1,
+        "intent": "factual",
+        "model": "qwen/qwen3.8-27b",
+        "cited_docs": [
+          "011-frontend-architecture.md",
+          "011-frontend-architecture.md"
+        ],
+        "source_hit": true,
+        "citation_precision": 1.0,
+        "has_citation": true,
+        "keywords_ok": true,
+        "answer": "The frontend stores the JWT in `localStorage` [2][5]. This storage method carries the security risk that server-side rendering (SSR) is not possible because server components cannot read `localStorage` [5]. Consequently, the application must rely entirely on client-side data fetching to access the token, which requires a parallel server-fetch path if SSR were attempted, making the architecture more complex [5]. Additionally, because the token is stored in `localStorage`, it is accessible to any JavaScript running on the page, which can be a vector for Cross-Site Scripting (XSS) attacks, although the provided context specifically highlights the architectural limitation regarding SSR and the necessity of client-side-only data access as the primary consequence [5]."
+      }
+    ]
+  }
+}
