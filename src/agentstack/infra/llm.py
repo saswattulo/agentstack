@@ -10,10 +10,12 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from typing import Any, Protocol
 
+import groq
 from groq import AsyncGroq
 
 from agentstack.config import settings
 from agentstack.infra.logging import get_logger
+from agentstack.infra.metrics import LLM_FALLBACKS
 from agentstack.infra.tracing import (
     INPUT_VALUE,
     LLM_COMPLETION_TOKENS,
@@ -49,7 +51,8 @@ class ChatClient(Protocol):
         **kwargs: Any,
     ) -> dict[str, Any]: ...
 
-    async def stream(
+    # Not `async def`: implementations are async generators, which this signature describes.
+    def stream(
         self,
         messages: list[dict[str, Any]],
         *,
@@ -68,12 +71,17 @@ class ChatClient(Protocol):
 
 
 class GroqChatClient:
-    def __init__(self, model: str | None = None, api_key: str | None = None) -> None:
+    def __init__(
+        self,
+        model: str | None = None,
+        api_key: str | None = None,
+        max_retries: int = 2,
+    ) -> None:
         self.model = model or settings.groq_chat_model
         key = api_key or settings.groq_api_key
         if not key:
             raise RuntimeError("GROQ_API_KEY is not set")
-        self._client = AsyncGroq(api_key=key)
+        self._client = AsyncGroq(api_key=key, max_retries=max_retries)
 
     async def complete(
         self,
@@ -198,15 +206,112 @@ class GroqChatClient:
             return text
 
 
+# Errors where another model can still answer; auth and bad-request errors would fail there too.
+_FALLBACK_ERRORS: tuple[type[Exception], ...] = (
+    groq.RateLimitError,
+    groq.NotFoundError,
+    groq.InternalServerError,
+    groq.APIConnectionError,
+)
+
+
+class LLMUnavailableError(RuntimeError):
+    """Primary and fallback models both failed with a capacity/availability error."""
+
+
+class FallbackChatClient:
+    """Primary model with a fallback; Groq quotas are per model, so a 429 on one rarely blocks the other."""
+
+    def __init__(self, primary: GroqChatClient, fallback: GroqChatClient) -> None:
+        self.primary = primary
+        self.fallback = fallback
+        self.model = primary.model
+
+    def _record(self, exc: Exception) -> None:
+        reason = type(exc).__name__
+        LLM_FALLBACKS.labels(
+            from_model=self.primary.model, to_model=self.fallback.model, reason=reason
+        ).inc()
+        logger.warning(
+            "llm fallback",
+            from_model=self.primary.model,
+            to_model=self.fallback.model,
+            reason=reason,
+        )
+
+    async def complete(
+        self,
+        messages: list[dict[str, Any]],
+        *,
+        temperature: float = 0.2,
+        max_tokens: int | None = None,
+        tools: list[dict[str, Any]] | None = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        try:
+            return await self.primary.complete(
+                messages, temperature=temperature, max_tokens=max_tokens, tools=tools, **kwargs
+            )
+        except _FALLBACK_ERRORS as exc:
+            self._record(exc)
+        try:
+            return await self.fallback.complete(
+                messages, temperature=temperature, max_tokens=max_tokens, tools=tools, **kwargs
+            )
+        except _FALLBACK_ERRORS as exc:
+            raise LLMUnavailableError(f"{self.fallback.model}: {type(exc).__name__}") from exc
+
+    async def stream(
+        self,
+        messages: list[dict[str, Any]],
+        *,
+        temperature: float = 0.2,
+        max_tokens: int | None = None,
+        **kwargs: Any,
+    ) -> AsyncIterator[str]:
+        started = False
+        try:
+            async for token in self.primary.stream(
+                messages, temperature=temperature, max_tokens=max_tokens, **kwargs
+            ):
+                started = True
+                yield token
+            return
+        except _FALLBACK_ERRORS as exc:
+            # Switching models mid-answer would splice two different responses.
+            if started:
+                raise
+            self._record(exc)
+        try:
+            async for token in self.fallback.stream(
+                messages, temperature=temperature, max_tokens=max_tokens, **kwargs
+            ):
+                yield token
+        except _FALLBACK_ERRORS as exc:
+            raise LLMUnavailableError(f"{self.fallback.model}: {type(exc).__name__}") from exc
+
+    async def transcribe(
+        self,
+        audio_wav: bytes,
+        *,
+        language: str | None = None,
+        prompt: str | None = None,
+    ) -> str:
+        return await self.primary.transcribe(audio_wav, language=language, prompt=prompt)
+
+
 _client: ChatClient | None = None
 
 
 def get_chat_client() -> ChatClient:
     global _client
     if _client is None:
-        _client = GroqChatClient()
+        fallback_model = settings.groq_fallback_model
+        if fallback_model and fallback_model != settings.groq_chat_model:
+            # No retries on the primary: a 429 should reroute now, not after SDK backoff.
+            _client = FallbackChatClient(
+                GroqChatClient(max_retries=0), GroqChatClient(model=fallback_model)
+            )
+        else:
+            _client = GroqChatClient()
     return _client
-
-
-def get_fallback_chat_client() -> ChatClient:
-    return GroqChatClient(model=settings.groq_fallback_model)

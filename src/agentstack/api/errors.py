@@ -44,6 +44,13 @@ class RateLimitedError(AppError):
         super().__init__(message, status_code=status.HTTP_429_TOO_MANY_REQUESTS, **kwargs)
 
 
+class ServiceUnavailableError(AppError):
+    code = "service_unavailable"
+
+    def __init__(self, message: str = "Service temporarily unavailable", **kwargs):
+        super().__init__(message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE, **kwargs)
+
+
 class ValidationError(AppError):
     code = "validation_error"
 

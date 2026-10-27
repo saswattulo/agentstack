@@ -9,8 +9,13 @@ from uuid import UUID, uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from agentstack.api.errors import ServiceUnavailableError
 from agentstack.config import settings
-from agentstack.core.agent.citations import extract_citations
+from agentstack.core.agent.citations import (
+    extract_citations,
+    normalize_citation_markers,
+    normalize_stream_token,
+)
 from agentstack.core.agent.graph import get_compiled_graph
 from agentstack.core.agent.nodes import (
     AgentState,
@@ -21,7 +26,7 @@ from agentstack.core.agent.nodes import (
 )
 from agentstack.core.retrieval.cache import CachedAnswer, LLMCache
 from agentstack.core.retrieval.hybrid import RetrievedChunk
-from agentstack.infra.llm import get_chat_client
+from agentstack.infra.llm import LLMUnavailableError, get_chat_client
 from agentstack.infra.logging import get_logger
 from agentstack.infra.metrics import QUERY_LATENCY
 from agentstack.infra.tracing import (
@@ -155,6 +160,8 @@ async def run_query(
                 )
             )
             await db.commit()
+            if isinstance(exc, LLMUnavailableError):
+                raise ServiceUnavailableError("LLM capacity exhausted; retry shortly") from exc
             raise
 
         answer = (result_state.get("answer") or "").strip()
@@ -357,10 +364,11 @@ async def stream_query(
         model = client.model
         buffer: list[str] = []
         async for token in client.stream(messages=messages, temperature=0.2, max_tokens=800):
+            token = normalize_stream_token(token)
             buffer.append(token)
             yield {"type": "token", "data": token}
 
-        answer = "".join(buffer).strip()
+        answer = normalize_citation_markers("".join(buffer).strip())
         citations = extract_citations(answer, chunks_list)
         citation_dicts = [c.model_dump(mode="json") for c in citations]
 

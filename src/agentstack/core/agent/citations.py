@@ -13,7 +13,20 @@ from agentstack.core.retrieval.hybrid import RetrievedChunk
 from agentstack.schemas.query import Citation
 
 _CITATION_MARKER_RE = re.compile(r"\[(\d+)\]")
+# gpt-oss cites as 【2】 or 【2†L3-L5】 instead of [2].
+_VARIANT_MARKER_RE = re.compile(r"[【\[]\s*(\d+)\s*(?:†[^】\]]*)?[】\]]")
+_FULLWIDTH_BRACKETS = str.maketrans({"【": "[", "】": "]"})
 _PREVIEW_LIMIT = 240
+
+
+def normalize_citation_markers(text: str) -> str:
+    """Rewrite model-specific citation markers to the canonical `[n]`."""
+    return _VARIANT_MARKER_RE.sub(r"[\1]", text) if text else text
+
+
+def normalize_stream_token(token: str) -> str:
+    """Per-token bracket mapping so live-streamed markers already render as `[n]`."""
+    return token.translate(_FULLWIDTH_BRACKETS)
 
 
 def build_context_block(chunks: list[RetrievedChunk]) -> str:

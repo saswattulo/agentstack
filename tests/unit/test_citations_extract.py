@@ -3,6 +3,8 @@ import pytest
 from agentstack.core.agent.citations import (
     build_context_block,
     extract_citations,
+    normalize_citation_markers,
+    normalize_stream_token,
     validate_citations,
 )
 from agentstack.core.retrieval.hybrid import RetrievedChunk
@@ -87,3 +89,30 @@ def test_validate_drops_out_of_range():
     )
     out = validate_citations(citations + [bad], chunks)
     assert all(1 <= c.index <= 1 for c in out)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("Uses React Query【2】【3】.", "Uses React Query[2][3]."),
+        ("Argon2id【1†L4-L9】.", "Argon2id[1]."),
+        ("Whisper [3†source].", "Whisper [3]."),
+        ("Already canonical [2][4].", "Already canonical [2][4]."),
+        ("Lists like [a] and 【note】 stay.", "Lists like [a] and 【note】 stay."),
+    ],
+)
+def test_normalize_citation_markers(raw, expected):
+    assert normalize_citation_markers(raw) == expected
+
+
+@pytest.mark.unit
+def test_fullwidth_markers_become_citations():
+    answer = normalize_citation_markers("Qdrant【1】 and Argon2id【2】.")
+    assert [c.index for c in extract_citations(answer, _chunks("a", "b"))] == [1, 2]
+
+
+@pytest.mark.unit
+def test_stream_tokens_split_across_marker_still_render():
+    tokens = ["store", "【", "2", "】", "."]
+    assert "".join(normalize_stream_token(t) for t in tokens) == "store[2]."

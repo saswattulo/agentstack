@@ -39,6 +39,12 @@ LLM_TOKENS = Counter(
     labelnames=("provider", "model", "kind"),  # kind = prompt|completion
 )
 
+LLM_FALLBACKS = Counter(
+    "agentstack_llm_fallbacks_total",
+    "LLM calls rerouted from the primary to the fallback model",
+    labelnames=("from_model", "to_model", "reason"),
+)
+
 RETRIEVAL_CHUNKS_RETURNED = Histogram(
     "agentstack_retrieval_chunks_returned",
     "Number of chunks returned from retrieval",
