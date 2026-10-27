@@ -1,7 +1,10 @@
 // Thin typed client for the AgentStack API. Week 4 expands this with the chat
 // streaming hook, eval dashboard queries, and a real auth provider.
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// Same-origin: HTTP requests go to the Next dev server and are proxied to the
+// API by the /api/* rewrite in next.config.mjs. This avoids browser CORS.
+// (Voice WS still dials the API directly via NEXT_PUBLIC_API_URL.)
+const BASE = "";
 const FALLBACK_KEY = process.env.NEXT_PUBLIC_API_KEY ?? "";
 
 let accessToken: string | null = null;
