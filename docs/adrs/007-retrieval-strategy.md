@@ -49,3 +49,19 @@ We also need to keep retrieval cheap: a developer running this locally should no
 - Recall on a stable eval set (Week 3 RAGAS) plateaus and the reranker shows a >5pt lift.
 - Multi-worker scale-out happens — at that point sparse index belongs in Redis or a dedicated service.
 - We support large (>1M chunk) collections — BM25Okapi build cost stops being negligible.
+
+## Addendum (2026-10-25) — measured, and a reranker memory fix
+
+The "Week 3 eval set" revisit trigger now has data: `benchmarks/retrieval_ablation.py`, 35 questions, doc-level relevance (`docs/benchmarks.md`).
+
+| Method | Hit@1 | Hit@5 | MRR@5 | p50 |
+|---|---|---|---|---|
+| Dense only | 0.914 | 1.000 | 0.957 | 51 ms |
+| BM25 only (previews) | 0.771 | 0.943 | 0.835 | 3 ms |
+| Hybrid RRF (this ADR) | 0.829 | 1.000 | 0.910 | 65 ms |
+| Hybrid RRF + rerank fused top-5 | 0.886 | 1.000 | 0.925 | 1.4 s |
+
+- On natural-language questions over prose, dense alone ranks best. Equal-weight RRF let the weaker BM25 list demote a correct top-1 on 3 of 35 questions; recall is unchanged. The set has few identifier-heavy queries, which is where BM25 should earn its place. Add those before re-weighting RRF.
+- Indexing BM25 over full chunk text instead of previews didn't improve BM25 on its own (0.743 Hit@1).
+- The reranker recovers 2 of the 3 demotions (+5.7 pts Hit@1) for ~1.4 s/query on CPU. Widening its pool to the fused top-20 gave no further gain here. Keeping it off by default stands.
+- **Bug fixed:** `HybridRetriever` built a new `CrossEncoderReranker()` per query, so `RERANKER_ENABLED=true` reloaded 1.1 GB of weights every request and OOM-killed a 4.5 GB container. It now uses the process-wide `get_reranker()` singleton, and peak RSS held flat at 1.7 GB over 10 reranked queries.
