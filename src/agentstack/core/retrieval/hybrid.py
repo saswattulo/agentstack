@@ -137,9 +137,9 @@ class HybridRetriever:
         ordered = ordered[:top_k]
 
         if settings.reranker_enabled and ordered:
-            from agentstack.core.retrieval.reranker import CrossEncoderReranker
+            from agentstack.core.retrieval.reranker import get_reranker
 
-            ordered = CrossEncoderReranker().rerank(query, ordered, top_k=top_k)
+            ordered = get_reranker().rerank(query, ordered, top_k=top_k)
 
         RETRIEVAL_CHUNKS_RETURNED.observe(len(ordered))
 

@@ -5,6 +5,8 @@ Week 2 / stretch — wraps a sentence-transformers CrossEncoder.
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 from agentstack.config import settings
 from agentstack.core.retrieval.hybrid import RetrievedChunk
 
@@ -42,3 +44,9 @@ class CrossEncoderReranker:
             chunk.score = float(score)
             out.append(chunk)
         return out
+
+
+# One instance per process: the model is cached on the instance and is ~1.1 GB.
+@lru_cache(maxsize=1)
+def get_reranker() -> CrossEncoderReranker:
+    return CrossEncoderReranker()
